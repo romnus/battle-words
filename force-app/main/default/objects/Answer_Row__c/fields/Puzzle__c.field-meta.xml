@@ -3,10 +3,11 @@
     <fullName>Puzzle__c</fullName>
     <label>Puzzle</label>
     <referenceTo>Puzzle__c</referenceTo>
-    <relationshipLabel>Black Squares</relationshipLabel>
-    <relationshipName>Black_Squares</relationshipName>
+    <relationshipLabel>Answer Rows</relationshipLabel>
+    <relationshipName>Answer_Row</relationshipName>
     <relationshipOrder>0</relationshipOrder>
-    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <reparentableMasterDetail>true</reparentableMasterDetail>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>MasterDetail</type>
     <writeRequiresMasterRead>false</writeRequiresMasterRead>
