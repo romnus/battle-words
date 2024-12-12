@@ -16,7 +16,6 @@ export default class PuzzleGrid extends LightningElement {
 
   connectedCallback() {
     getAnswerRowDtos({ puzzleId: this.recordId }).then((results) => {
-      console.log(results);
       this.answerRowDtos = JSON.parse(results);
     });
   }

@@ -1,13 +1,18 @@
 <template>
-  <template for:each={answerRowDtos} for:item="answerRowDto">
-    <div key={answerRowDto.rowLocation}>
-      <template for:each={answerRowDto.squares} for:item="square">
+  <div class="puzzle-grid-container-15-by-15">
+    <template for:each={answerRowDtos} for:item="answerRowDto">
+      <template
+        for:each={answerRowDto.squares}
+        for:item="square"
+        key={answerRowDto.rowLocation}
+      >
         <c-puzzle-grid-square
           key={square.columnLocation}
           show-answer="true"
+          is-black-square={square.isBlackSquare}
           answer={square.squareText}
         ></c-puzzle-grid-square>
       </template>
-    </div>
-  </template>
+    </template>
+  </div>
 </template>

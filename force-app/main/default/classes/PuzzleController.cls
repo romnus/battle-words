@@ -1,4 +1,6 @@
 public with sharing class PuzzleController {
+  private static final String BLACK_SQUARE_CHARACTER = '.';
+
   @AuraEnabled(cacheable=true)
   public static String getAnswerRowDtos(Id puzzleId) {
     List<Answer_Row__c> answerRows = [
@@ -30,6 +32,10 @@ public with sharing class PuzzleController {
         square.columnLocation = String.valueOf(columnLocation);
         square.squareText = currentCharacter;
 
+        if (currentCharacter == BLACK_SQUARE_CHARACTER) {
+          square.isBlackSquare = true;
+        }
+
         squares.add(square);
       }
 
@@ -58,5 +64,6 @@ public with sharing class PuzzleController {
   private class Square {
     String columnLocation { get; set; }
     String squareText { get; set; }
+    Boolean isBlackSquare { get; set; }
   }
 }
