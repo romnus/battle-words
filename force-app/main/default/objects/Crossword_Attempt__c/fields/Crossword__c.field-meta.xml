@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Puzzle__c</fullName>
-    <label>Puzzle</label>
+    <fullName>Crossword__c</fullName>
+    <label>Crossword</label>
     <referenceTo>Puzzle__c</referenceTo>
-    <relationshipLabel>Attempts</relationshipLabel>
-    <relationshipName>Attempts</relationshipName>
+    <relationshipLabel>Crossword Attempts</relationshipLabel>
+    <relationshipName>Crossword_Attempts</relationshipName>
     <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>true</reparentableMasterDetail>
     <trackTrending>false</trackTrending>

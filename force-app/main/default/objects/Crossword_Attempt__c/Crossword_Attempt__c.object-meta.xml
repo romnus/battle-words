@@ -153,13 +153,13 @@
     <enableSharing>false</enableSharing>
     <enableStreamingApi>false</enableStreamingApi>
     <externalSharingModel>ControlledByParent</externalSharingModel>
-    <label>Attempt</label>
+    <label>Crossword Attempt</label>
     <nameField>
-        <displayFormat>A-{0000}</displayFormat>
-        <label>Attempt Name</label>
+        <displayFormat>CA-{0000}</displayFormat>
+        <label>Crossword Attempt Name</label>
         <type>AutoNumber</type>
     </nameField>
-    <pluralLabel>Attempts</pluralLabel>
+    <pluralLabel>Crossword Attempts</pluralLabel>
     <searchLayouts></searchLayouts>
     <sharingModel>ControlledByParent</sharingModel>
     <startsWith>Vowel</startsWith>
