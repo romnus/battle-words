@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionOverrides>
         <actionName>Accept</actionName>
@@ -155,12 +155,12 @@
     <externalSharingModel>ControlledByParent</externalSharingModel>
     <label>Crossword Attempt</label>
     <nameField>
-        <displayFormat>CA-{0000}</displayFormat>
+        <displayFormat>A-{0000}</displayFormat>
         <label>Attempt Name</label>
         <type>AutoNumber</type>
     </nameField>
     <pluralLabel>Crossword Attempts</pluralLabel>
-    <searchLayouts />
+    <searchLayouts></searchLayouts>
     <sharingModel>ControlledByParent</sharingModel>
     <startsWith>Vowel</startsWith>
     <visibility>Public</visibility>
