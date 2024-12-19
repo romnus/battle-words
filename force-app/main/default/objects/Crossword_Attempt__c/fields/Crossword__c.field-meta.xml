@@ -3,7 +3,7 @@
     <fullName>Crossword__c</fullName>
     <label>Crossword</label>
     <referenceTo>Crossword__c</referenceTo>
-    <relationshipLabel>Crossword Attempts</relationshipLabel>
+    <relationshipLabel>Attempts</relationshipLabel>
     <relationshipName>Crossword_Attempts</relationshipName>
     <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>true</reparentableMasterDetail>

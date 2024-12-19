@@ -21,9 +21,6 @@
         <readable>false</readable>
     </fieldPermissions>
     <layoutAssignments>
-        <layout>Answer_Row__c-Answer Row Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
         <layout>Crossword__c-Crossword Layout</layout>
     </layoutAssignments>
     <tabVisibilities>

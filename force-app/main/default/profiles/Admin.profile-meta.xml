@@ -30,23 +30,11 @@
         <readable>false</readable>
     </fieldPermissions>
     <layoutAssignments>
-        <layout>Answer_Row__c-Answer Row Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
         <layout>Crossword_Attempt__c-Attempt Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Crossword__c-Crossword Layout</layout>
     </layoutAssignments>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>true</allowDelete>
-        <allowEdit>true</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>true</modifyAllRecords>
-        <object>Answer_Row__c</object>
-        <viewAllRecords>true</viewAllRecords>
-    </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>

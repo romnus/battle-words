@@ -3,8 +3,8 @@
     <fullName>Crossword__c</fullName>
     <label>Crossword</label>
     <referenceTo>Crossword__c</referenceTo>
-    <relationshipLabel>Answer Rows</relationshipLabel>
-    <relationshipName>Answer_Row</relationshipName>
+    <relationshipLabel>Clue-Answer Pairs</relationshipLabel>
+    <relationshipName>Crossword_Clue_Answer_Pair</relationshipName>
     <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>true</reparentableMasterDetail>
     <trackHistory>false</trackHistory>

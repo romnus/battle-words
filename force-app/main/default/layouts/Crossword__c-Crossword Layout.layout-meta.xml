@@ -62,12 +62,6 @@
         <style>CustomLinks</style>
     </layoutSections>
     <relatedLists>
-        <fields>NAME</fields>
-        <fields>Answer_Row_Text__c</fields>
-        <fields>Answer_Row_Location__c</fields>
-        <relatedList>Answer_Row__c.Crossword__c</relatedList>
-    </relatedLists>
-    <relatedLists>
         <fields>TASK.SUBJECT</fields>
         <fields>TASK.WHO_NAME</fields>
         <fields>ACTIVITY.TASK</fields>
