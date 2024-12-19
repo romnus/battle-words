@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Crossword__c</fullName>
-    <label>Crossword</label>
-    <referenceTo>Crossword__c</referenceTo>
-    <relationshipLabel>Crossword Attempts</relationshipLabel>
-    <relationshipName>Crossword_Attempts</relationshipName>
+    <fullName>Answer_Row__c</fullName>
+    <label>Answer Row</label>
+    <referenceTo>Answer_Row__c</referenceTo>
+    <relationshipLabel>Clue-Answer Pairs</relationshipLabel>
+    <relationshipName>Crossword_Clue_Answer_Pair</relationshipName>
     <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>true</reparentableMasterDetail>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>MasterDetail</type>
     <writeRequiresMasterRead>false</writeRequiresMasterRead>

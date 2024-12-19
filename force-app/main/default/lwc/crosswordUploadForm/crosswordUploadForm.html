@@ -1,0 +1,22 @@
+<template>
+  <lightning-card title="Upload a crossword" icon-name="custom:custom14">
+    <lightning-file-upload
+      name="crosswordUploader"
+      accept=".cfp"
+      onuploadfinished={handleUploadFinished}
+    >
+    </lightning-file-upload>
+    <div class="slds-m-around_medium">
+      <template lwc:if={wasNewCrosswordUploaded}>
+        <p>
+          <lightning-button
+            label="Open New Crossword Record"
+            title="Open New Crossword Record"
+            onclick={handleOpenCrosswordRecord}
+            class="slds-m-left_x-small"
+          ></lightning-button>
+        </p>
+      </template>
+    </div>
+  </lightning-card>
+</template>

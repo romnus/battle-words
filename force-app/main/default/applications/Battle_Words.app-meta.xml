@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
     <brand>
         <headerColor>#D72474</headerColor>
@@ -12,8 +12,8 @@
     <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
     <label>Battle Words</label>
     <navType>Standard</navType>
-    <tabs>Puzzle_Uploader</tabs>
-    <tabs>Puzzle__c</tabs>
+    <tabs>Crossword_Uploader</tabs>
+    <tabs>Crossword__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>Battle_Words_UtilityBar</utilityBar>
 </CustomApplication>

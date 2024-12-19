@@ -3,10 +3,11 @@
     <fullName>Crossword__c</fullName>
     <label>Crossword</label>
     <referenceTo>Crossword__c</referenceTo>
-    <relationshipLabel>Crossword Attempts</relationshipLabel>
-    <relationshipName>Crossword_Attempts</relationshipName>
+    <relationshipLabel>Answer Rows</relationshipLabel>
+    <relationshipName>Answer_Row</relationshipName>
     <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>true</reparentableMasterDetail>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>MasterDetail</type>
     <writeRequiresMasterRead>false</writeRequiresMasterRead>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <applicationVisibilities>
         <application>Battle_Words</application>
@@ -6,17 +6,17 @@
         <visible>true</visible>
     </applicationVisibilities>
     <classAccesses>
-        <apexClass>PuzzleController</apexClass>
+        <apexClass>CrosswordController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>PuzzleUploadFormController</apexClass>
+        <apexClass>CrosswordUploadFormController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <custom>false</custom>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Clue_Answer_Pair__c.Direction__c</field>
+        <field>Crossword_Clue_Answer_Pair__c.Direction__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -26,7 +26,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Puzzle__c.Release_Date__c</field>
+        <field>Crossword__c.Release_Date__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <layoutAssignments>
@@ -36,7 +36,7 @@
         <layout>Crossword_Attempt__c-Attempt Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>Puzzle__c-Puzzle Layout</layout>
+        <layout>Crossword__c-Crossword Layout</layout>
     </layoutAssignments>
     <objectPermissions>
         <allowCreate>true</allowCreate>
@@ -53,7 +53,7 @@
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
-        <object>Clue_Answer_Pair__c</object>
+        <object>Crossword_Clue_Answer_Pair__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
@@ -71,15 +71,15 @@
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
-        <object>Puzzle__c</object>
+        <object>Crossword__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <tabVisibilities>
-        <tab>Puzzle_Uploader</tab>
+        <tab>Crossword_Uploader</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>
     <tabVisibilities>
-        <tab>Puzzle__c</tab>
+        <tab>Crossword__c</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>
     <userLicense>Salesforce</userLicense>
