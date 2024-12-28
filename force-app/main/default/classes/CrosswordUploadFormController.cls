@@ -1,25 +1,23 @@
 public with sharing class CrosswordUploadFormController {
+  private static final String ACROSS = 'ACROSS';
+  private static final String DOWN = 'DOWN';
+  private static final String NEWLINE = '\n';
+  private static final String PERIOD = '.';
+
+  private static final List<String> CLUE_ENDING_SQUARE_VALUES = new List<String>{
+    PERIOD,
+    NEWLINE
+  };
+
   @AuraEnabled(cacheable=false)
   public static Id processCfpFileUpload(String uploadedCfpId) {
     Dom.XmlNode crossFire = getCrosswordAsXml(uploadedCfpId);
 
-    String grid = crossFire.getChildElement('GRID', null).getText();
-    grid = grid.removeStart('\n');
+    Crossword__c crossword = upsertCrossword(crossFire);
 
-    String title = crossFire.getChildElement('TITLE', null).getText();
+    insertClueAnswerPairs(crossword, crossFire);
 
-    Crossword__c crossword = upsertCrossword(grid, title);
-
-    delete [SELECT Id FROM Answer_Row__c WHERE Crossword__c = :crossword.Id];
-
-    List<Answer_Row__c> answerRowRecords = insertAnswerRowRecords(
-      grid,
-      crossword.Id
-    );
-
-    insertClueAnswerPairs(crossFire, answerRowRecords);
-
-    return '';
+    return crossword.Id;
   }
 
   private static Dom.XmlNode getCrosswordAsXml(String uploadedCfpId) {
@@ -39,7 +37,9 @@ public with sharing class CrosswordUploadFormController {
     return crossFire;
   }
 
-  private static Crossword__c upsertCrossword(String grid, String title) {
+  private static Crossword__c upsertCrossword(Dom.XmlNode crossFire) {
+    String title = crossFire.getChildElement('TITLE', null).getText();
+
     Crossword__c crossword = new Crossword__c();
 
     List<Crossword__c> crosswords = [
@@ -52,84 +52,173 @@ public with sharing class CrosswordUploadFormController {
       crossword = crosswords[0];
     }
 
+    Integer gridSize = Integer.valueOf(
+      crossFire.getChildElement('GRID', null).getAttributeValue('width', null)
+    );
+
     crossword.Name = title;
-    crossword.Size_Across__c = grid.indexOf('\n');
-    crossword.Size_Top__c = grid.countMatches('\n');
+    crossword.Size_Across__c = gridSize;
+    crossword.Size_Top__c = gridSize;
 
     upsert crossword;
 
     return crossword;
   }
 
-  private static List<Answer_Row__c> insertAnswerRowRecords(
-    String grid,
-    Id crosswordId
-  ) {
-    List<String> answerRows = grid.split('\n');
-
-    List<Answer_Row__c> answerRowRecords = new List<Answer_Row__c>();
-
-    Integer answerRowLocation = 1;
-
-    for (String answerRow : answerRows) {
-      List<String> answers = answerRow.split('\\.');
-
-      Answer_Row__c answerRowRecord = new Answer_Row__c();
-      answerRowRecord.Crossword__c = crosswordId;
-      answerRowRecord.Answer_Row_Text__c = answerRow;
-      answerRowRecord.Answer_Row_Location__c = answerRowLocation;
-
-      answerRowRecords.add(answerRowRecord);
-
-      answerRowLocation++;
-    }
-
-    insert answerRowRecords;
-
-    return answerRowRecords;
-  }
-
   private static void insertClueAnswerPairs(
-    Dom.XmlNode crossFire,
-    List<Answer_Row__c> answerRowRecords
+    Crossword__c crossword,
+    Dom.XmlNode crossFire
   ) {
+    String answersWithBlackSquares = crossFire.getChildElement('GRID', null)
+      .getText()
+      .removeStart('\n');
+
     List<Dom.XmlNode> clueNodes = crossFire.getChildElement('WORDS', null)
       .getChildElements();
 
+    List<Crossword_Clue_Answer_Pair__c> clueAnwerPairs = getAcrossClueAnswerPairs(
+      answersWithBlackSquares,
+      clueNodes,
+      crossword
+    );
+
+    insert clueAnwerPairs;
+  }
+
+  private static List<Crossword_Clue_Answer_Pair__c> getAcrossClueAnswerPairs(
+    String answersWithBlackSquares,
+    List<Dom.XmlNode> clueNodes,
+    Crossword__c crossword
+  ) {
     List<Crossword_Clue_Answer_Pair__c> clueAnswerPairs = new List<Crossword_Clue_Answer_Pair__c>();
 
-    Integer answerId = 0;
+    Integer pointer = 0;
+    Integer clueCounter = 0;
 
-    for (Answer_Row__c answerRowRecord : answerRowRecords) {
-      List<String> answersWithBlanks = answerRowRecord.Answer_Row_Text__c.split(
-        '\\.'
+    Integer distanceFromPreviousSquare = 1;
+    String direction = '';
+    String oldDirection = '';
+
+    Boolean isAnswerGridStillBeingProcessed = true;
+
+    String answer = '';
+
+    while (isAnswerGridStillBeingProcessed) {
+      String answerSquareValue = answersWithBlackSquares.substring(
+        pointer,
+        pointer + 1
       );
 
-      List<String> answers = new List<String>();
+      Dom.XmlNode clueNode = clueNodes[clueCounter];
 
-      for (String answer : answersWithBlanks) {
-        if (!String.isBlank(answer)) {
-          answers.add(answer);
-        }
+      direction = clueNode.getAttributeValue('dir', null);
+
+      if (direction == DOWN && oldDirection == ACROSS) {
+        distanceFromPreviousSquare = 16;
+        pointer = 0;
       }
 
-      for (String answer : answers) {
+      if (
+        isSquareValueBeginningOfAnswer(
+          answersWithBlackSquares,
+          direction,
+          pointer,
+          distanceFromPreviousSquare
+        )
+      ) {
+        answer = getAnswer(
+          answersWithBlackSquares,
+          pointer,
+          distanceFromPreviousSquare
+        );
+
         Crossword_Clue_Answer_Pair__c clueAnswerPair = new Crossword_Clue_Answer_Pair__c();
-
-        Dom.XmlNode clueNode = clueNodes[answerId];
-
-        clueAnswerPair.Answer_Row__c = answerRowRecord.Id;
+        clueAnswerPair.Crossword__c = crossword.Id;
         clueAnswerPair.Clue__c = clueNode.getText();
         clueAnswerPair.Answer__c = answer;
-        clueAnswerPair.Direction__c = clueNode.getAttributeValue('dir', null);
-        clueAnswerPair.Answer_ID__c = answerId;
-
-        answerId++;
+        clueAnswerPair.Answer_ID__c = clueCounter;
+        clueAnswerPair.Direction__c = direction;
+        clueAnswerPair.Location__c = pointer;
 
         clueAnswerPairs.add(clueAnswerPair);
+
+        clueCounter++;
+      }
+
+      pointer++;
+
+      isAnswerGridStillBeingProcessed = clueCounter < clueNodes.size();
+
+      oldDirection = direction;
+    }
+
+    return clueAnswerPairs;
+  }
+
+  private static Boolean isSquareValueBeginningOfAnswer(
+    String answersWithBlackSquares,
+    String direction,
+    Integer pointer,
+    Integer distanceFromPreviousSquare
+  ) {
+    Boolean isSquareValueBeginningOfAnswer = false;
+
+    Integer locationOfSquareValueBeforeCurrentSquareValue =
+      pointer - distanceFromPreviousSquare;
+
+    Boolean isSquareValueInFirstRowAndDirectionIsDown =
+      direction == DOWN &&
+      locationOfSquareValueBeforeCurrentSquareValue < 0;
+
+    Boolean isFirstSquare = pointer == 0;
+
+    String currentSquareValue = answersWithBlackSquares.substring(
+      pointer,
+      pointer + 1
+    );
+
+    if (!CLUE_ENDING_SQUARE_VALUES.contains(currentSquareValue)) {
+      if (
+        isSquareValueInFirstRowAndDirectionIsDown ||
+        isFirstSquare ||
+        CLUE_ENDING_SQUARE_VALUES.contains(
+          answersWithBlackSquares.substring(
+            locationOfSquareValueBeforeCurrentSquareValue,
+            locationOfSquareValueBeforeCurrentSquareValue + 1
+          )
+        )
+      ) {
+        isSquareValueBeginningOfAnswer = true;
       }
     }
 
-    insert clueAnswerPairs;
+    return isSquareValueBeginningOfAnswer;
+  }
+
+  private static String getAnswer(
+    String answersWithBlackSquares,
+    Integer pointer,
+    Integer distanceFromPreviousSquare
+  ) {
+    String answer = '';
+
+    for (
+      Integer i = pointer;
+      i < answersWithBlackSquares.length();
+      i += distanceFromPreviousSquare
+    ) {
+      String currentSquareValue = answersWithBlackSquares.substring(i, i + 1);
+
+      if (!CLUE_ENDING_SQUARE_VALUES.contains(currentSquareValue)) {
+        answer += currentSquareValue;
+      } else if (
+        CLUE_ENDING_SQUARE_VALUES.contains(currentSquareValue) &&
+        !String.isBlank(answer)
+      ) {
+        break;
+      }
+    }
+
+    return answer;
   }
 }
