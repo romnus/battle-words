@@ -1,71 +1,97 @@
 public with sharing class CrosswordController {
   private static final String BLACK_SQUARE_CHARACTER = '.';
+  private static final String ACROSS = 'ACROSS';
 
   @AuraEnabled(cacheable=true)
-  public static String getAnswerRowDtos(Id crosswordId) {
-    // List<Answer_Row__c> answerRows = [
-    //   SELECT Answer_Row_Text__c, Answer_Row_Location__c
-    //   FROM Answer_Row__c
-    //   WHERE Crossword__c = :crosswordId
-    //   ORDER BY Answer_Row_Location__c ASC
-    // ];
+  public static String getGridRowDtos(Id crosswordId) {
+    List<Crossword_Clue_Answer_Pair__c> clueAnswerPairs = [
+      SELECT
+        Answer__c,
+        Location__c,
+        Crossword__r.Size_Top__c,
+        Crossword__r.Size_Across__c
+      FROM Crossword_Clue_Answer_Pair__c
+      WHERE Crossword__c = :crosswordId AND Direction__c = :ACROSS
+      ORDER BY Answer_ID__c ASC
+    ];
 
-    // List<AnswerRowDto> answerRowDtos = new List<AnswerRowDto>();
+    Integer sizeTop = Integer.valueOf(
+      clueAnswerPairs[0].Crossword__r.Size_Top__c
+    );
+    Integer sizeAcross = Integer.valueOf(
+      clueAnswerPairs[0].Crossword__r.Size_Across__c
+    );
 
-    // for (Answer_Row__c answerRow : answerRows) {
-    //   List<Square> squares = new List<Square>();
+    List<Square> squares = new List<Square>();
 
-    //   String answerRowText = answerRow.Answer_Row_Text__c;
+    for (Integer i = 0; i < sizeTop * sizeAcross; i++) {
+      Square square = new Square();
+      square.squareId = i + 1;
+      square.squareValue = BLACK_SQUARE_CHARACTER;
 
-    //   for (
-    //     Integer columnLocation = 0;
-    //     columnLocation < answerRowText.length();
-    //     columnLocation++
-    //   ) {
-    //     Integer characterCode = answerRowText.charAt(columnLocation);
-    //     String currentCharacter = String.fromCharArray(
-    //       new List<Integer>{ characterCode }
-    //     );
+      squares.add(square);
+    }
 
-    //     Square square = new Square();
+    for (Crossword_Clue_Answer_Pair__c clueAnswerPair : clueAnswerPairs) {
+      String answer = clueAnswerPair.Answer__c;
 
-    //     square.columnLocation = String.valueOf(columnLocation);
-    //     square.squareText = currentCharacter;
+      Integer startingSquareLocation = Integer.valueOf(
+        clueAnswerPair.Location__c
+      );
 
-    //     if (currentCharacter == BLACK_SQUARE_CHARACTER) {
-    //       square.isBlackSquare = true;
-    //     }
+      Square startingSquare = squares.get(startingSquareLocation);
 
-    //     squares.add(square);
-    //   }
+      for (
+        Integer characterCounter = 0;
+        characterCounter < answer.length();
+        characterCounter++
+      ) {
+        String squareValue = answer.substring(
+          characterCounter,
+          characterCounter + 1
+        );
 
-    //   AnswerRowDto answerRowDto = new AnswerRowDto();
+        Integer squareId = startingSquareLocation + characterCounter;
 
-    //   answerRowDto.rowLocation = Integer.valueOf(
-    //     answerRow.Answer_Row_Location__c
-    //   );
-    //   answerRowDto.squares = squares;
+        Square currentSquare = squares.get(squareId - 1);
 
-    //   answerRowDtos.add(answerRowDto);
-    // }
+        currentSquare.squareValue = squareValue;
+      }
+    }
 
-    // return JSON.serialize(answerRowDtos);
+    List<GridRowDto> gridRowDtos = new List<GridRowDto>();
+    gridRowDtos.add(new GridRowDto(0));
 
-    return '';
+    for (Square square : squares) {
+      gridRowDtos[gridRowDtos.size() - 1].squares.add(square);
+
+      if (
+        Math.mod(square.squareId, sizeAcross) == 0 &&
+        gridRowDtos.size() != sizeTop
+      ) {
+        gridRowDtos.add(new GridRowDto(gridRowDtos.size()));
+      }
+    }
+
+    return JSON.serialize(gridRowDtos);
   }
 
   @TestVisible
-  private class AnswerRowDto {
+  private class GridRowDto {
     @TestVisible
     Integer rowLocation { get; set; }
 
     @TestVisible
     List<Square> squares { get; set; }
+
+    public GridRowDto(Integer rowLocation) {
+      this.rowLocation = rowLocation;
+      this.squares = new List<Square>();
+    }
   }
 
   private class Square {
-    String columnLocation { get; set; }
-    String squareText { get; set; }
-    Boolean isBlackSquare { get; set; }
+    Integer squareId { get; set; }
+    String squareValue { get; set; }
   }
 }
