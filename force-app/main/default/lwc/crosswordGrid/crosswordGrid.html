@@ -1,16 +1,15 @@
 <template>
   <div class="crossword-grid-container-15-by-15">
-    <template for:each={answerRowDtos} for:item="answerRowDto">
+    <template for:each={gridRowDtos} for:item="gridRowDto">
       <template
-        for:each={answerRowDto.squares}
+        for:each={gridRowDto.squares}
         for:item="square"
-        key={answerRowDto.rowLocation}
+        key={gridRowDto.rowLocation}
       >
         <c-crossword-grid-square
-          key={square.columnLocation}
+          key={square.squareId}
           show-answer="true"
-          is-black-square={square.isBlackSquare}
-          answer={square.squareText}
+          answer={square.squareValue}
         ></c-crossword-grid-square>
       </template>
     </template>
