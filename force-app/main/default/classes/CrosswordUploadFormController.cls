@@ -15,6 +15,12 @@ public with sharing class CrosswordUploadFormController {
 
     Crossword__c crossword = upsertCrossword(crossFire);
 
+    delete [
+      SELECT Id
+      FROM Crossword_Clue_Answer_Pair__c
+      WHERE Crossword__c = :crossword.Id
+    ];
+
     insertClueAnswerPairs(crossword, crossFire);
 
     return crossword.Id;
@@ -95,27 +101,18 @@ public with sharing class CrosswordUploadFormController {
     Integer pointer = 0;
     Integer clueCounter = 0;
 
+    Integer endOfGrid = answersWithBlackSquares.length() - 1;
+    String direction = ACROSS;
+
     Integer distanceFromPreviousSquare = 1;
-    String direction = '';
-    String oldDirection = '';
 
     Boolean isAnswerGridStillBeingProcessed = true;
 
-    String answer = '';
-
     while (isAnswerGridStillBeingProcessed) {
-      String answerSquareValue = answersWithBlackSquares.substring(
-        pointer,
-        pointer + 1
-      );
-
-      Dom.XmlNode clueNode = clueNodes[clueCounter];
-
-      direction = clueNode.getAttributeValue('dir', null);
-
-      if (direction == DOWN && oldDirection == ACROSS) {
+      if (pointer == endOfGrid) {
         distanceFromPreviousSquare = 16;
         pointer = 0;
+        direction = DOWN;
       }
 
       if (
@@ -126,30 +123,36 @@ public with sharing class CrosswordUploadFormController {
           distanceFromPreviousSquare
         )
       ) {
-        answer = getAnswer(
-          answersWithBlackSquares,
-          pointer,
-          distanceFromPreviousSquare
-        );
+        Dom.XmlNode clueNode = clueNodes[clueCounter];
 
         Crossword_Clue_Answer_Pair__c clueAnswerPair = new Crossword_Clue_Answer_Pair__c();
         clueAnswerPair.Crossword__c = crossword.Id;
         clueAnswerPair.Clue__c = clueNode.getText();
+
+        String answer = getAnswer(
+          answersWithBlackSquares,
+          pointer,
+          distanceFromPreviousSquare
+        );
         clueAnswerPair.Answer__c = answer;
+
         clueAnswerPair.Answer_ID__c = clueCounter;
         clueAnswerPair.Direction__c = direction;
-        clueAnswerPair.Location__c = pointer;
+
+        Integer location =
+          pointer +
+          1 -
+          answersWithBlackSquares.substring(0, pointer).countMatches(NEWLINE);
+        clueAnswerPair.Location__c = location;
 
         clueAnswerPairs.add(clueAnswerPair);
 
         clueCounter++;
+
+        isAnswerGridStillBeingProcessed = clueCounter < clueNodes.size();
       }
 
       pointer++;
-
-      isAnswerGridStillBeingProcessed = clueCounter < clueNodes.size();
-
-      oldDirection = direction;
     }
 
     return clueAnswerPairs;
