@@ -8,11 +8,12 @@ public with sharing class CrosswordController {
       SELECT
         Answer__c,
         Location__c,
+        Number__c,
         Crossword__r.Size_Top__c,
         Crossword__r.Size_Across__c
       FROM Crossword_Clue_Answer_Pair__c
       WHERE Crossword__c = :crosswordId AND Direction__c = :ACROSS
-      ORDER BY Answer_ID__c ASC
+      ORDER BY Number__c ASC
     ];
 
     Integer sizeTop = Integer.valueOf(
@@ -26,8 +27,8 @@ public with sharing class CrosswordController {
 
     for (Integer i = 0; i < sizeTop * sizeAcross; i++) {
       Square square = new Square();
-      square.squareId = i + 1;
-      square.squareValue = BLACK_SQUARE_CHARACTER;
+      square.id = i + 1;
+      square.value = BLACK_SQUARE_CHARACTER;
 
       squares.add(square);
     }
@@ -40,22 +41,20 @@ public with sharing class CrosswordController {
       );
 
       Square startingSquare = squares.get(startingSquareLocation);
+      startingSquare.answerId = clueAnswerPair.Number__c;
 
       for (
         Integer characterCounter = 0;
         characterCounter < answer.length();
         characterCounter++
       ) {
-        String squareValue = answer.substring(
-          characterCounter,
-          characterCounter + 1
-        );
+        String value = answer.substring(characterCounter, characterCounter + 1);
 
-        Integer squareId = startingSquareLocation + characterCounter;
+        Integer id = startingSquareLocation + characterCounter;
 
-        Square currentSquare = squares.get(squareId - 1);
+        Square currentSquare = squares.get(id - 1);
 
-        currentSquare.squareValue = squareValue;
+        currentSquare.value = value;
       }
     }
 
@@ -66,7 +65,7 @@ public with sharing class CrosswordController {
       gridRowDtos[gridRowDtos.size() - 1].squares.add(square);
 
       if (
-        Math.mod(square.squareId, sizeAcross) == 0 &&
+        Math.mod(square.id, sizeAcross) == 0 &&
         gridRowDtos.size() != sizeTop
       ) {
         gridRowDtos.add(new GridRowDto(gridRowDtos.size()));
@@ -91,7 +90,8 @@ public with sharing class CrosswordController {
   }
 
   private class Square {
-    Integer squareId { get; set; }
-    String squareValue { get; set; }
+    Integer id { get; set; }
+    String value { get; set; }
+    String answerId { get; set; }
   }
 }
