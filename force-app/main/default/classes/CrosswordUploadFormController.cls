@@ -136,7 +136,7 @@ public with sharing class CrosswordUploadFormController {
         );
         clueAnswerPair.Answer__c = answer;
 
-        clueAnswerPair.Number__c = String.valueOf(clueCounter);
+        clueAnswerPair.Number__c = clueNode.getAttributeValue('num', null);
         clueAnswerPair.Direction__c = direction;
 
         Integer location =

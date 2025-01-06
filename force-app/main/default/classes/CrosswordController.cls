@@ -9,10 +9,11 @@ public with sharing class CrosswordController {
         Answer__c,
         Location__c,
         Number__c,
+        Direction__c,
         Crossword__r.Size_Top__c,
         Crossword__r.Size_Across__c
       FROM Crossword_Clue_Answer_Pair__c
-      WHERE Crossword__c = :crosswordId AND Direction__c = :ACROSS
+      WHERE Crossword__c = :crosswordId
       ORDER BY Number__c ASC
     ];
 
@@ -29,32 +30,38 @@ public with sharing class CrosswordController {
       Square square = new Square();
       square.id = i + 1;
       square.value = BLACK_SQUARE_CHARACTER;
+      square.clueNumber = '';
 
       squares.add(square);
     }
 
     for (Crossword_Clue_Answer_Pair__c clueAnswerPair : clueAnswerPairs) {
-      String answer = clueAnswerPair.Answer__c;
-
       Integer startingSquareLocation = Integer.valueOf(
-        clueAnswerPair.Location__c
+        clueAnswerPair.Location__c - 1
       );
 
       Square startingSquare = squares.get(startingSquareLocation);
-      startingSquare.answerId = clueAnswerPair.Number__c;
+      startingSquare.clueNumber = clueAnswerPair.Number__c;
 
-      for (
-        Integer characterCounter = 0;
-        characterCounter < answer.length();
-        characterCounter++
-      ) {
-        String value = answer.substring(characterCounter, characterCounter + 1);
+      if (clueAnswerPair.Direction__c == ACROSS) {
+        String answer = clueAnswerPair.Answer__c;
 
-        Integer id = startingSquareLocation + characterCounter;
+        for (
+          Integer characterCounter = 0;
+          characterCounter < answer.length();
+          characterCounter++
+        ) {
+          String value = answer.substring(
+            characterCounter,
+            characterCounter + 1
+          );
 
-        Square currentSquare = squares.get(id - 1);
+          Integer id = startingSquareLocation + characterCounter;
 
-        currentSquare.value = value;
+          Square currentSquare = squares.get(id);
+
+          currentSquare.value = value;
+        }
       }
     }
 
@@ -92,6 +99,6 @@ public with sharing class CrosswordController {
   private class Square {
     Integer id { get; set; }
     String value { get; set; }
-    String answerId { get; set; }
+    String clueNumber { get; set; }
   }
 }
