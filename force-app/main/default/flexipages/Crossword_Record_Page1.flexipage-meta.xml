@@ -292,11 +292,11 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>crosswordGrid</componentName>
-                <identifier>c_crosswordGrid</identifier>
+                <componentName>crossword</componentName>
+                <identifier>c_crossword</identifier>
             </componentInstance>
         </itemInstances>
-        <name>Facet-eab5d584-1949-4a39-8c3d-802bf67f4ce1</name>
+        <name>Facet-eea81750-27bd-4fc0-a0d9-87fb833924c2</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -336,8 +336,12 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>active</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
                     <name>body</name>
-                    <value>Facet-eab5d584-1949-4a39-8c3d-802bf67f4ce1</value>
+                    <value>Facet-eea81750-27bd-4fc0-a0d9-87fb833924c2</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>title</name>
