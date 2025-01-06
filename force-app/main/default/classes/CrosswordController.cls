@@ -30,7 +30,6 @@ public with sharing class CrosswordController {
       Square square = new Square();
       square.id = i + 1;
       square.value = BLACK_SQUARE_CHARACTER;
-      square.clueNumber = '';
 
       squares.add(square);
     }
@@ -41,7 +40,7 @@ public with sharing class CrosswordController {
       );
 
       Square startingSquare = squares.get(startingSquareLocation);
-      startingSquare.clueNumber = clueAnswerPair.Number__c;
+      startingSquare.clueNumber = Integer.valueOf(clueAnswerPair.Number__c);
 
       if (clueAnswerPair.Direction__c == ACROSS) {
         String answer = clueAnswerPair.Answer__c;
@@ -99,6 +98,6 @@ public with sharing class CrosswordController {
   private class Square {
     Integer id { get; set; }
     String value { get; set; }
-    String clueNumber { get; set; }
+    Integer clueNumber { get; set; }
   }
 }
