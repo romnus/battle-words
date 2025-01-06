@@ -2,6 +2,7 @@ import { LightningElement, api } from "lwc";
 
 export default class CrosswordGridSquare extends LightningElement {
   @api answer;
+  @api clueNumber;
 
   BLACK_SQUARE_CHARACTER = ".";
 

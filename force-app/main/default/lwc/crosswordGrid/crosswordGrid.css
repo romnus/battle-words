@@ -1,5 +1,9 @@
+* {
+  box-sizing: border-box;
+}
+
 .crossword-grid-container-15-by-15 {
   display: grid;
-  grid-template-columns: 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px;
-  padding: 0px;
+  grid-template-columns: repeat(15, 50px);
+  grid-template-rows: repeat(15, 50px);
 }
