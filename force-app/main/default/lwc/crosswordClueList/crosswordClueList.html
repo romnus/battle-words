@@ -1,0 +1,21 @@
+<template>
+  <div class="clues">
+    <div class="across-clues">
+      <div class="direction-header">Across</div>
+      <template for:each={acrossClues} for:item="acrossClue">
+        <div class="clue" key={acrossClue.id}>
+          {acrossClue.Number__c}. {acrossClue.Clue__c}
+        </div>
+      </template>
+    </div>
+
+    <div class="down-clues">
+      <div class="direction-header">Down</div>
+      <template for:each={downClues} for:item="downClue">
+        <div class="clue" key={downClue.id}>
+          {downClue.Number__c}. {downClue.Clue__c}
+        </div>
+      </template>
+    </div>
+  </div>
+</template>

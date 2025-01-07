@@ -1,0 +1,21 @@
+.direction-header {
+  font-weight: bold;
+}
+
+.clue {
+  margin-left: 10px;
+}
+
+.clues {
+  display: grid;
+  grid-template-columns: 50% auto;
+  font-size: 16px;
+}
+
+.across-clues {
+  grid-column: 1 / 1;
+}
+
+.down-clues {
+  grid-column: 2 / 2;
+}

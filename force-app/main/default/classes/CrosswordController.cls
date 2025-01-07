@@ -81,6 +81,18 @@ public with sharing class CrosswordController {
     return JSON.serialize(gridRowDtos);
   }
 
+  @AuraEnabled(cacheable=true)
+  public static List<Crossword_Clue_Answer_Pair__c> getClues(Id crosswordId) {
+    List<Crossword_Clue_Answer_Pair__c> clues = [
+      SELECT Clue__c, Number__c, Direction__c
+      FROM Crossword_Clue_Answer_Pair__c
+      WHERE Crossword__c = :crosswordId
+      ORDER BY Direction__c ASC, Number__c ASC
+    ];
+
+    return clues;
+  }
+
   @TestVisible
   private class GridRowDto {
     @TestVisible
