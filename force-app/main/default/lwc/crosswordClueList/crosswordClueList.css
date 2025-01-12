@@ -19,3 +19,7 @@
 .down-clues {
   grid-column: 2 / 2;
 }
+
+.background-color-highlight {
+  background-color: #fffb00;
+}

@@ -3,7 +3,13 @@
     <div class="across-clues">
       <div class="direction-header">Across</div>
       <template for:each={acrossClues} for:item="acrossClue">
-        <div class="clue" key={acrossClue.id}>
+        <div
+          class="clue"
+          key={acrossClue.Id}
+          data-id={acrossClue.Id}
+          data-direction="across"
+          onclick={handleClueClick}
+        >
           {acrossClue.Number__c}. {acrossClue.Clue__c}
         </div>
       </template>
@@ -12,7 +18,13 @@
     <div class="down-clues">
       <div class="direction-header">Down</div>
       <template for:each={downClues} for:item="downClue">
-        <div class="clue" key={downClue.id}>
+        <div
+          class="clue"
+          key={downClue.Id}
+          data-id={downClue.Id}
+          data-direction="down"
+          onclick={handleClueClick}
+        >
           {downClue.Number__c}. {downClue.Clue__c}
         </div>
       </template>

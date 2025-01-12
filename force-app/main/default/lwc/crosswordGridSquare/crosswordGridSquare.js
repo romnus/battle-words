@@ -4,19 +4,20 @@ export default class CrosswordGridSquare extends LightningElement {
   @api answer;
   @api clueNumber;
 
-  BLACK_SQUARE_CHARACTER = ".";
+  renderedCallback() {
+    const backgroundColorClass =
+      this.answer == "." ? "background-color-black" : "background-color-white";
 
-  get isBlackSquare() {
-    return this.answer == this.BLACK_SQUARE_CHARACTER ? true : false;
+    this.refs.crosswordSquare.classList.add(backgroundColorClass);
   }
 
-  cssClass = "crossword-square ";
+  @api
+  highlightAnswer() {
+    this.refs.crosswordSquare.classList.add("background-color-highlight");
+  }
 
-  connectedCallback() {
-    this.backgroundColorClass = this.isBlackSquare
-      ? "background-color-black"
-      : "background-color-white";
-
-    this.cssClass += this.backgroundColorClass;
+  @api
+  removeAnswerHighlight() {
+    this.refs.crosswordSquare.classList.remove("background-color-highlight");
   }
 }

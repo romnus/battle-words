@@ -3,6 +3,7 @@
     <div class="grid">
       <c-crossword-grid record-id={recordId}> </c-crossword-grid>
     </div>
-    <c-crossword-clue-list record-id={recordId}> </c-crossword-clue-list>
+    <c-crossword-clue-list record-id={recordId} onclueclick={handleClueClick}>
+    </c-crossword-clue-list>
   </div>
 </template>

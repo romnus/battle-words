@@ -6,6 +6,7 @@ public with sharing class CrosswordController {
   public static String getGridRowDtos(Id crosswordId) {
     List<Crossword_Clue_Answer_Pair__c> clueAnswerPairs = [
       SELECT
+        Id,
         Answer__c,
         Location__c,
         Number__c,
@@ -42,24 +43,31 @@ public with sharing class CrosswordController {
       Square startingSquare = squares.get(startingSquareLocation);
       startingSquare.clueNumber = Integer.valueOf(clueAnswerPair.Number__c);
 
-      if (clueAnswerPair.Direction__c == ACROSS) {
-        String answer = clueAnswerPair.Answer__c;
+      String answer = clueAnswerPair.Answer__c;
 
-        for (
-          Integer characterCounter = 0;
-          characterCounter < answer.length();
-          characterCounter++
-        ) {
+      for (
+        Integer characterCounter = 0;
+        characterCounter < answer.length();
+        characterCounter++
+      ) {
+        if (clueAnswerPair.Direction__c == ACROSS) {
+          Integer id = startingSquareLocation + characterCounter;
+
+          Square currentSquare = squares.get(id);
+
           String value = answer.substring(
             characterCounter,
             characterCounter + 1
           );
 
-          Integer id = startingSquareLocation + characterCounter;
+          currentSquare.value = value;
+          currentSquare.clueAnswerPairIdAcross = clueAnswerPair.Id;
+        } else {
+          Integer id = startingSquareLocation + characterCounter * sizeTop;
 
           Square currentSquare = squares.get(id);
 
-          currentSquare.value = value;
+          currentSquare.clueAnswerPairIdDown = clueAnswerPair.Id;
         }
       }
     }
@@ -84,7 +92,7 @@ public with sharing class CrosswordController {
   @AuraEnabled(cacheable=true)
   public static List<Crossword_Clue_Answer_Pair__c> getClues(Id crosswordId) {
     List<Crossword_Clue_Answer_Pair__c> clues = [
-      SELECT Clue__c, Number__c, Direction__c
+      SELECT Id, Clue__c, Number__c, Direction__c
       FROM Crossword_Clue_Answer_Pair__c
       WHERE Crossword__c = :crosswordId
       ORDER BY Direction__c ASC, Number__c ASC
@@ -111,5 +119,7 @@ public with sharing class CrosswordController {
     Integer id { get; set; }
     String value { get; set; }
     Integer clueNumber { get; set; }
+    Id clueAnswerPairIdAcross { get; set; }
+    Id clueAnswerPairIdDown { get; set; }
   }
 }
