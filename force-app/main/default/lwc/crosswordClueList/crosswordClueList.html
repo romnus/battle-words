@@ -9,6 +9,8 @@
           data-id={acrossClue.Id}
           data-direction="across"
           onclick={handleClueClick}
+          tabindex="0"
+          onfocus={handleClueClick}
         >
           {acrossClue.Number__c}. {acrossClue.Clue__c}
         </div>
@@ -24,6 +26,8 @@
           data-id={downClue.Id}
           data-direction="down"
           onclick={handleClueClick}
+          tabindex="0"
+          onfocus={handleClueClick}
         >
           {downClue.Number__c}. {downClue.Clue__c}
         </div>
