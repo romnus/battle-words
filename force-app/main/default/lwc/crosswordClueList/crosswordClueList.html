@@ -8,8 +8,10 @@
           key={acrossClue.Id}
           data-id={acrossClue.Id}
           data-direction="across"
+          data-number={acrossClue.Number__c}
           onclick={handleClueClick}
           tabindex="0"
+          onkeydown={handleOnKeyDown}
           onfocus={handleClueClick}
         >
           {acrossClue.Number__c}. {acrossClue.Clue__c}
@@ -25,8 +27,10 @@
           key={downClue.Id}
           data-id={downClue.Id}
           data-direction="down"
+          data-number={downClue.Number__c}
           onclick={handleClueClick}
           tabindex="0"
+          onkeydown={handleOnKeyDown}
           onfocus={handleClueClick}
         >
           {downClue.Number__c}. {downClue.Clue__c}

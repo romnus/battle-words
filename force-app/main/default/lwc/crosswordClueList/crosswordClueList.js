@@ -55,4 +55,58 @@ export default class CrosswordClueList extends LightningElement {
 
     this.oldHighlightedClueAnswerPairId = clueAnswerPairId;
   }
+
+  handleOnKeyDown(event) {
+    event.preventDefault();
+
+    const direction = event.target.dataset.direction;
+
+    if (event.key == "ArrowDown") {
+      const nextClue = this.template.activeElement.nextElementSibling;
+
+      if (nextClue) {
+        nextClue.focus();
+      } else {
+        if (direction === "across") {
+          const firstDownClue = this.template.querySelector(
+            '.down-clues div[data-number="1"]'
+          );
+
+          firstDownClue.focus();
+        } else {
+          const firstAcrossClue = this.template.querySelector(
+            '.across-clues div[data-number="1"]'
+          );
+
+          firstAcrossClue.focus();
+        }
+      }
+    } else if (event.key == "ArrowUp") {
+      const previousClue = this.template.activeElement.previousElementSibling;
+
+      if (previousClue.classList.contains("clue")) {
+        previousClue.focus();
+      } else {
+        if (direction === "across") {
+          const lastDownClueNumber =
+            this.downClues[this.downClues.length - 1].Number__c;
+
+          const lastDownClue = this.template.querySelector(
+            '.down-clues div[data-number="' + lastDownClueNumber + '"]'
+          );
+
+          lastDownClue.focus();
+        } else {
+          const lastAcrossClueNumber =
+            this.acrossClues[this.acrossClues.length - 1].Number__c;
+
+          const lastAcrossClue = this.template.querySelector(
+            '.across-clues div[data-number="' + lastAcrossClueNumber + '"]'
+          );
+
+          lastAcrossClue.focus();
+        }
+      }
+    }
+  }
 }
