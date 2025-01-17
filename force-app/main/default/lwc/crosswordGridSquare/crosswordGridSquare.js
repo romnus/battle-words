@@ -1,8 +1,11 @@
 import { LightningElement, api } from "lwc";
 
 export default class CrosswordGridSquare extends LightningElement {
+  @api squareId;
   @api answer;
   @api clueNumber;
+  @api clueAnswerPairIdAcross;
+  @api clueAnswerPairIdDown;
 
   renderedCallback() {
     const backgroundColorClass =
@@ -12,12 +15,33 @@ export default class CrosswordGridSquare extends LightningElement {
   }
 
   @api
-  highlightAnswer() {
+  highlightSquare() {
     this.refs.crosswordSquare.classList.add("background-color-highlight");
   }
 
   @api
-  removeAnswerHighlight() {
+  removeSquareHighlight() {
     this.refs.crosswordSquare.classList.remove("background-color-highlight");
+  }
+
+  @api
+  removeSquareFocusHighlight() {
+    this.refs.crosswordSquare.classList.remove(
+      "background-color-focus-highlight"
+    );
+  }
+
+  highlightAnswer(event) {
+    this.refs.crosswordSquare.classList.add("background-color-focus-highlight");
+
+    this.dispatchEvent(
+      new CustomEvent("squareclick", {
+        detail: {
+          squareId: this.squareId,
+          acrossId: this.clueAnswerPairIdAcross,
+          downId: this.clueAnswerPairIdDown
+        }
+      })
+    );
   }
 }

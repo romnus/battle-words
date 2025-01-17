@@ -6,6 +6,9 @@ export default class CrosswordGrid extends LightningElement {
 
   gridRowDtos = [];
   oldAnswerIdentifier;
+  oldFocusedSquareId;
+
+  currentDirection = "across";
 
   connectedCallback() {
     getGridRowDtos({ crosswordId: this.recordId }).then((results) => {
@@ -22,7 +25,7 @@ export default class CrosswordGrid extends LightningElement {
       this.template
         .querySelectorAll(this.oldAnswerIdentifier)
         .forEach((square) => {
-          square.removeAnswerHighlight();
+          square.removeSquareHighlight();
         });
     }
 
@@ -34,9 +37,43 @@ export default class CrosswordGrid extends LightningElement {
       '"]';
 
     this.template.querySelectorAll(answerIdentifier).forEach((square) => {
-      square.highlightAnswer();
+      square.highlightSquare();
     });
 
     this.oldAnswerIdentifier = answerIdentifier;
+  }
+
+  highlightAnswerOnSquareClick(event) {
+    const focusedSquareId = event.detail.squareId;
+
+    let cluePairAnswerIdToHighlight =
+      this.currentDirection === "across"
+        ? event.detail.acrossId
+        : event.detail.downId;
+
+    if (this.oldFocusedSquareId) {
+      if (this.oldFocusedSquareId === focusedSquareId) {
+        if (this.currentDirection === "across") {
+          cluePairAnswerIdToHighlight = event.detail.downId;
+          this.currentDirection = "down";
+        } else {
+          cluePairAnswerIdToHighlight = event.detail.acrossId;
+          this.currentDirection = "across";
+        }
+      } else {
+        let oldFocusedSquareIdentifier =
+          'c-crossword-grid-square[data-square-id="' +
+          this.oldFocusedSquareId +
+          '"]';
+
+        this.template
+          .querySelector(oldFocusedSquareIdentifier)
+          .removeSquareFocusHighlight();
+      }
+    }
+
+    this.highlightAnswer(cluePairAnswerIdToHighlight, this.currentDirection);
+
+    this.oldFocusedSquareId = focusedSquareId;
   }
 }

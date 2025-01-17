@@ -32,5 +32,9 @@
 }
 
 .background-color-highlight {
+  background-color: #a5cbe0;
+}
+
+.background-color-focus-highlight {
   background-color: #fffb00;
 }

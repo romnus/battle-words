@@ -8,10 +8,15 @@
       >
         <c-crossword-grid-square
           key={square.id}
+          data-square-id={square.id}
+          square-id={square.id}
           answer={square.value}
           clue-number={square.clueNumber}
           data-clue-answer-pair-id-across={square.clueAnswerPairIdAcross}
           data-clue-answer-pair-id-down={square.clueAnswerPairIdDown}
+          clue-answer-pair-id-across={square.clueAnswerPairIdAcross}
+          clue-answer-pair-id-down={square.clueAnswerPairIdDown}
+          onsquareclick={highlightAnswerOnSquareClick}
         ></c-crossword-grid-square>
       </template>
     </template>

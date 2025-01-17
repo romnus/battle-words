@@ -1,5 +1,9 @@
 <template>
-  <div lwc:ref="crosswordSquare" class="crossword-square">
+  <div
+    lwc:ref="crosswordSquare"
+    class="crossword-square"
+    onclick={highlightAnswer}
+  >
     <div class="clue-number">{clueNumber}</div>
     <div class="answer">{answer}</div>
   </div>
