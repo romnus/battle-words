@@ -12,4 +12,12 @@ export default class Crossword extends LightningElement {
       .querySelector("c-crossword-grid")
       .highlightAnswer(clueAnswerPairId, direction);
   }
+
+  handleSquareClick(event) {
+    const clueAnswerPairId = event.detail.id;
+
+    this.template
+      .querySelector("c-crossword-clue-list")
+      .highlightClue(clueAnswerPairId);
+  }
 }

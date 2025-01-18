@@ -27,22 +27,8 @@ export default class CrosswordClueList extends LightningElement {
   }
 
   handleClueClick(event) {
-    if (this.oldHighlightedClueAnswerPairId) {
-      let clueElement = this.template.querySelector(
-        'div[data-id="' + this.oldHighlightedClueAnswerPairId + '"]'
-      );
-
-      clueElement.classList.remove("background-color-highlight");
-    }
-
     const clueAnswerPairId = event.target.dataset.id;
     const direction = event.target.dataset.direction;
-
-    let clueElement = this.template.querySelector(
-      'div[data-id="' + clueAnswerPairId + '"]'
-    );
-
-    clueElement.classList.add("background-color-highlight");
 
     this.dispatchEvent(
       new CustomEvent("clueclick", {
@@ -52,6 +38,25 @@ export default class CrosswordClueList extends LightningElement {
         }
       })
     );
+
+    this.highlightClue(clueAnswerPairId);
+  }
+
+  @api
+  highlightClue(clueAnswerPairId) {
+    if (this.oldHighlightedClueAnswerPairId) {
+      let clueElement = this.template.querySelector(
+        'div[data-id="' + this.oldHighlightedClueAnswerPairId + '"]'
+      );
+
+      clueElement.classList.remove("background-color-highlight");
+    }
+
+    let clueElement = this.template.querySelector(
+      'div[data-id="' + clueAnswerPairId + '"]'
+    );
+
+    clueElement.classList.add("background-color-highlight");
 
     this.oldHighlightedClueAnswerPairId = clueAnswerPairId;
   }

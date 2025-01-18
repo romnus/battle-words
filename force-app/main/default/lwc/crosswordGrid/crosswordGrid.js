@@ -8,6 +8,7 @@ export default class CrosswordGrid extends LightningElement {
   oldAnswerIdentifier;
   oldFocusedSquareId;
 
+  highlightedClueAnswerPairId;
   currentDirection = "across";
 
   connectedCallback() {
@@ -16,10 +17,54 @@ export default class CrosswordGrid extends LightningElement {
     });
   }
 
+  handleSquareClick(event) {
+    const focusedSquareId = event.detail.squareId;
+    const acrossId = event.detail.acrossId;
+    const downId = event.detail.downId;
+
+    this.highlightedClueAnswerPairId =
+      this.currentDirection === "across" ? acrossId : downId;
+
+    if (this.oldFocusedSquareId) {
+      if (this.oldFocusedSquareId === focusedSquareId) {
+        this.toggleHighlightedClueAnswerPairIdAndDirection(acrossId, downId);
+      } else {
+        this.removeSquareFocusHighlight(focusedSquareId);
+      }
+    }
+
+    this.oldFocusedSquareId = focusedSquareId;
+
+    this.highlightAnswer();
+
+    this.highlightClueOnSquareClick();
+  }
+
+  toggleHighlightedClueAnswerPairIdAndDirection(acrossId, downId) {
+    if (this.currentDirection === "across") {
+      this.highlightedClueAnswerPairId = downId;
+      this.currentDirection = "down";
+    } else {
+      this.highlightedClueAnswerPairId = acrossId;
+      this.currentDirection = "across";
+    }
+  }
+
+  removeSquareFocusHighlight(focusedSquareId) {
+    let oldFocusedSquareIdentifier =
+      'c-crossword-grid-square[data-square-id="' +
+      this.oldFocusedSquareId +
+      '"]';
+
+    this.template
+      .querySelector(oldFocusedSquareIdentifier)
+      .removeSquareFocusHighlight();
+  }
+
   @api
-  highlightAnswer(clueAnswerPairId, direction) {
+  highlightAnswer() {
     const clueAnswerPairIdAttributeName =
-      "data-clue-answer-pair-id-" + direction;
+      "data-clue-answer-pair-id-" + this.currentDirection;
 
     if (this.oldAnswerIdentifier) {
       this.template
@@ -33,7 +78,7 @@ export default class CrosswordGrid extends LightningElement {
       "c-crossword-grid-square[" +
       clueAnswerPairIdAttributeName +
       '="' +
-      clueAnswerPairId +
+      this.highlightedClueAnswerPairId +
       '"]';
 
     this.template.querySelectorAll(answerIdentifier).forEach((square) => {
@@ -43,37 +88,13 @@ export default class CrosswordGrid extends LightningElement {
     this.oldAnswerIdentifier = answerIdentifier;
   }
 
-  highlightAnswerOnSquareClick(event) {
-    const focusedSquareId = event.detail.squareId;
-
-    let cluePairAnswerIdToHighlight =
-      this.currentDirection === "across"
-        ? event.detail.acrossId
-        : event.detail.downId;
-
-    if (this.oldFocusedSquareId) {
-      if (this.oldFocusedSquareId === focusedSquareId) {
-        if (this.currentDirection === "across") {
-          cluePairAnswerIdToHighlight = event.detail.downId;
-          this.currentDirection = "down";
-        } else {
-          cluePairAnswerIdToHighlight = event.detail.acrossId;
-          this.currentDirection = "across";
+  highlightClueOnSquareClick() {
+    this.dispatchEvent(
+      new CustomEvent("squareclick", {
+        detail: {
+          id: this.highlightedClueAnswerPairId
         }
-      } else {
-        let oldFocusedSquareIdentifier =
-          'c-crossword-grid-square[data-square-id="' +
-          this.oldFocusedSquareId +
-          '"]';
-
-        this.template
-          .querySelector(oldFocusedSquareIdentifier)
-          .removeSquareFocusHighlight();
-      }
-    }
-
-    this.highlightAnswer(cluePairAnswerIdToHighlight, this.currentDirection);
-
-    this.oldFocusedSquareId = focusedSquareId;
+      })
+    );
   }
 }

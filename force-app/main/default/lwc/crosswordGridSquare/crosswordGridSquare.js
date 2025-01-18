@@ -31,7 +31,7 @@ export default class CrosswordGridSquare extends LightningElement {
     );
   }
 
-  highlightAnswer(event) {
+  handleSquareClick(event) {
     this.refs.crosswordSquare.classList.add("background-color-focus-highlight");
 
     this.dispatchEvent(
