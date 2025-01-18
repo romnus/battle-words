@@ -10,7 +10,7 @@ export default class Crossword extends LightningElement {
 
     this.template
       .querySelector("c-crossword-grid")
-      .highlightAnswer(clueAnswerPairId, direction);
+      .highlightAnswerOnClueClick(clueAnswerPairId, direction);
   }
 
   handleSquareClick(event) {
