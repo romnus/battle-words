@@ -21,7 +21,12 @@ public with sharing class CrosswordUploadFormController {
       WHERE Crossword__c = :crossword.Id
     ];
 
-    insertClueAnswerPairs(crossword, crossFire);
+    List<Crossword_Clue_Answer_Pair__c> clueAnswerPairs = getClueAnswerPairs(
+      crossFire,
+      crossword.Id
+    );
+
+    insert clueAnswerPairs;
 
     return crossword.Id;
   }
@@ -71,35 +76,21 @@ public with sharing class CrosswordUploadFormController {
     return crossword;
   }
 
-  private static void insertClueAnswerPairs(
-    Crossword__c crossword,
-    Dom.XmlNode crossFire
+  private static List<Crossword_Clue_Answer_Pair__c> getClueAnswerPairs(
+    Dom.XmlNode crossFire,
+    Id crosswordId
   ) {
+    List<Crossword_Clue_Answer_Pair__c> clueAnswerPairs = new List<Crossword_Clue_Answer_Pair__c>();
+
+    Integer pointer = 0;
+    Integer clueCounter = 0;
+
     String answersWithBlackSquares = crossFire.getChildElement('GRID', null)
       .getText()
       .removeStart('\n');
 
     List<Dom.XmlNode> clueNodes = crossFire.getChildElement('WORDS', null)
       .getChildElements();
-
-    List<Crossword_Clue_Answer_Pair__c> clueAnwerPairs = getAcrossClueAnswerPairs(
-      answersWithBlackSquares,
-      clueNodes,
-      crossword
-    );
-
-    insert clueAnwerPairs;
-  }
-
-  private static List<Crossword_Clue_Answer_Pair__c> getAcrossClueAnswerPairs(
-    String answersWithBlackSquares,
-    List<Dom.XmlNode> clueNodes,
-    Crossword__c crossword
-  ) {
-    List<Crossword_Clue_Answer_Pair__c> clueAnswerPairs = new List<Crossword_Clue_Answer_Pair__c>();
-
-    Integer pointer = 0;
-    Integer clueCounter = 0;
 
     Integer endOfGrid = answersWithBlackSquares.length() - 1;
     String direction = ACROSS;
@@ -126,15 +117,14 @@ public with sharing class CrosswordUploadFormController {
         Dom.XmlNode clueNode = clueNodes[clueCounter];
 
         Crossword_Clue_Answer_Pair__c clueAnswerPair = new Crossword_Clue_Answer_Pair__c();
-        clueAnswerPair.Crossword__c = crossword.Id;
+        clueAnswerPair.Crossword__c = crosswordId;
         clueAnswerPair.Clue__c = clueNode.getText();
 
-        String answer = getAnswer(
+        clueAnswerPair.Answer__c = getAnswer(
           answersWithBlackSquares,
           pointer,
           distanceFromPreviousSquare
         );
-        clueAnswerPair.Answer__c = answer;
 
         clueAnswerPair.Number__c = Integer.valueOf(
           clueNode.getAttributeValue('num', null)
