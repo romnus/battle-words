@@ -25,6 +25,16 @@ public with sharing class CrosswordController {
       clueAnswerPairs[0].Crossword__r.Size_Across__c
     );
 
+    List<Square> squares = getSquares(sizeTop, sizeAcross);
+
+    squares = setAnswerSquares(squares, clueAnswerPairs, sizeTop);
+
+    String gridRowsAsJSON = makeGridRowsAsJSON(squares, sizeAcross, sizeTop);
+
+    return gridRowsAsJSON;
+  }
+
+  private static List<Square> getSquares(Integer sizeTop, Integer sizeAcross) {
     List<Square> squares = new List<Square>();
 
     for (Integer i = 0; i < sizeTop * sizeAcross; i++) {
@@ -35,6 +45,14 @@ public with sharing class CrosswordController {
       squares.add(square);
     }
 
+    return squares;
+  }
+
+  private static List<Square> setAnswerSquares(
+    List<Square> squares,
+    List<Crossword_Clue_Answer_Pair__c> clueAnswerPairs,
+    Integer sizeTop
+  ) {
     for (Crossword_Clue_Answer_Pair__c clueAnswerPair : clueAnswerPairs) {
       Integer startingSquareLocation = Integer.valueOf(
         clueAnswerPair.Location__c - 1
@@ -72,6 +90,14 @@ public with sharing class CrosswordController {
       }
     }
 
+    return squares;
+  }
+
+  private static String makeGridRowsAsJSON(
+    List<Square> squares,
+    Integer sizeAcross,
+    Integer sizeTop
+  ) {
     List<GridRowDto> gridRowDtos = new List<GridRowDto>();
     gridRowDtos.add(new GridRowDto(0));
 
@@ -82,7 +108,9 @@ public with sharing class CrosswordController {
         Math.mod(square.id, sizeAcross) == 0 &&
         gridRowDtos.size() != sizeTop
       ) {
-        gridRowDtos.add(new GridRowDto(gridRowDtos.size()));
+        Integer rowLocation = gridRowDtos.size();
+
+        gridRowDtos.add(new GridRowDto(rowLocation));
       }
     }
 
