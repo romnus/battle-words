@@ -25,6 +25,11 @@ export default class CrosswordGridSquare extends LightningElement {
   }
 
   @api
+  addSquareFocusHighlight() {
+    this.refs.crosswordSquare.classList.add("background-color-focus-highlight");
+  }
+
+  @api
   removeSquareFocusHighlight() {
     this.refs.crosswordSquare.classList.remove(
       "background-color-focus-highlight"

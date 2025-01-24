@@ -2,11 +2,6 @@
   box-sizing: border-box;
 }
 
-.grid-clues-split {
-  display: grid;
-  grid-template-columns: 45% 35%;
-}
-
 .grid {
   grid-column: 1 / 1;
 }

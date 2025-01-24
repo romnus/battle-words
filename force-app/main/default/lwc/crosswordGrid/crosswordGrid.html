@@ -1,24 +1,28 @@
 <template>
-  <div class="crossword-grid-container-15-by-15">
-    <template for:each={gridRowDtos} for:item="gridRowDto">
-      <template
-        for:each={gridRowDto.squares}
-        for:item="square"
-        key={gridRowDto.rowLocation}
-      >
-        <c-crossword-grid-square
-          key={square.id}
-          data-square-id={square.id}
-          square-id={square.id}
-          answer={square.value}
-          clue-number={square.clueNumber}
-          data-clue-answer-pair-id-across={square.clueAnswerPairIdAcross}
-          data-clue-answer-pair-id-down={square.clueAnswerPairIdDown}
-          clue-answer-pair-id-across={square.clueAnswerPairIdAcross}
-          clue-answer-pair-id-down={square.clueAnswerPairIdDown}
-          onsquareclick={handleSquareClick}
-        ></c-crossword-grid-square>
+  <div class="grid-clues-split">
+    <div class="crossword-grid-container-15-by-15">
+      <template for:each={gridRowDtos} for:item="gridRowDto">
+        <template
+          for:each={gridRowDto.squares}
+          for:item="square"
+          key={gridRowDto.rowLocation}
+        >
+          <c-crossword-grid-square
+            key={square.id}
+            data-square-id={square.id}
+            square-id={square.id}
+            answer={square.value}
+            clue-number={square.clueNumber}
+            data-clue-answer-pair-id-across={square.clueAnswerPairIdAcross}
+            data-clue-answer-pair-id-down={square.clueAnswerPairIdDown}
+            clue-answer-pair-id-across={square.clueAnswerPairIdAcross}
+            clue-answer-pair-id-down={square.clueAnswerPairIdDown}
+            onsquareclick={handleSquareClick}
+          ></c-crossword-grid-square>
+        </template>
       </template>
-    </template>
+    </div>
+    <c-crossword-clue-list record-id={recordId} onclueclick={handleClueClick}>
+    </c-crossword-clue-list>
   </div>
 </template>

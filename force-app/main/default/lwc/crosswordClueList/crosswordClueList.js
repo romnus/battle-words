@@ -6,6 +6,21 @@ export default class CrosswordClueList extends LightningElement {
 
   acrossClues = [];
   downClues = [];
+
+  _highlightedClueAnswerPairId;
+
+  @api
+  get highlightedClueAnswerPairId() {
+    return this._highlightedClueAnswerPairId;
+  }
+
+  set highlightedClueAnswerPairId(value) {
+    this._highlightedClueAnswerPairId = value;
+
+    this.unhighlightClue();
+    this.highlightClue();
+  }
+
   oldHighlightedClueAnswerPairId;
 
   connectedCallback() {
@@ -39,11 +54,10 @@ export default class CrosswordClueList extends LightningElement {
       })
     );
 
-    this.highlightClue(clueAnswerPairId);
+    this.highlightedClueAnswerPairId = clueAnswerPairId;
   }
 
-  @api
-  highlightClue(clueAnswerPairId) {
+  unhighlightClue() {
     if (this.oldHighlightedClueAnswerPairId) {
       let clueElement = this.template.querySelector(
         'div[data-id="' + this.oldHighlightedClueAnswerPairId + '"]'
@@ -51,14 +65,16 @@ export default class CrosswordClueList extends LightningElement {
 
       clueElement.classList.remove("background-color-highlight");
     }
+  }
 
+  highlightClue() {
     let clueElement = this.template.querySelector(
-      'div[data-id="' + clueAnswerPairId + '"]'
+      'div[data-id="' + this.highlightedClueAnswerPairId + '"]'
     );
 
     clueElement.classList.add("background-color-highlight");
 
-    this.oldHighlightedClueAnswerPairId = clueAnswerPairId;
+    this.oldHighlightedClueAnswerPairId = this.highlightedClueAnswerPairId;
   }
 
   handleOnKeyDown(event) {

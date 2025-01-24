@@ -7,3 +7,8 @@
   grid-template-columns: repeat(15, 50px);
   grid-template-rows: repeat(15, 50px);
 }
+
+.grid-clues-split {
+  display: grid;
+  grid-template-columns: 45% 35%;
+}
