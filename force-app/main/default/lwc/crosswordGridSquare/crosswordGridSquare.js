@@ -7,9 +7,14 @@ export default class CrosswordGridSquare extends LightningElement {
   @api clueAnswerPairIdAcross;
   @api clueAnswerPairIdDown;
 
+  get isBlackSquare() {
+    return this.answer == ".";
+  }
+
   renderedCallback() {
-    const backgroundColorClass =
-      this.answer == "." ? "background-color-black" : "background-color-white";
+    const backgroundColorClass = this.isBlackSquare
+      ? "background-color-black"
+      : "background-color-white";
 
     this.refs.crosswordSquare.classList.add(backgroundColorClass);
   }
@@ -37,16 +42,20 @@ export default class CrosswordGridSquare extends LightningElement {
   }
 
   handleSquareClick(event) {
-    this.refs.crosswordSquare.classList.add("background-color-focus-highlight");
+    if (!this.isBlackSquare) {
+      this.refs.crosswordSquare.classList.add(
+        "background-color-focus-highlight"
+      );
 
-    this.dispatchEvent(
-      new CustomEvent("squareclick", {
-        detail: {
-          squareId: this.squareId,
-          acrossId: this.clueAnswerPairIdAcross,
-          downId: this.clueAnswerPairIdDown
-        }
-      })
-    );
+      this.dispatchEvent(
+        new CustomEvent("squareclick", {
+          detail: {
+            squareId: this.squareId,
+            acrossId: this.clueAnswerPairIdAcross,
+            downId: this.clueAnswerPairIdDown
+          }
+        })
+      );
+    }
   }
 }
