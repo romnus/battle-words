@@ -15,13 +15,20 @@ export default class CrosswordClueList extends LightningElement {
   }
 
   set highlightedClueAnswerPairId(value) {
+    if (this._highlightedClueAnswerPairId) {
+      this.unhighlightClue();
+    }
+
     this._highlightedClueAnswerPairId = value;
 
-    this.unhighlightClue();
     this.highlightClue();
   }
 
-  oldHighlightedClueAnswerPairId;
+  get highlightedClueElement() {
+    return this.template.querySelector(
+      'div[data-id="' + this.highlightedClueAnswerPairId + '"]'
+    );
+  }
 
   connectedCallback() {
     getClues({ crosswordId: this.recordId }).then((clues) => {
@@ -58,23 +65,11 @@ export default class CrosswordClueList extends LightningElement {
   }
 
   unhighlightClue() {
-    if (this.oldHighlightedClueAnswerPairId) {
-      let clueElement = this.template.querySelector(
-        'div[data-id="' + this.oldHighlightedClueAnswerPairId + '"]'
-      );
-
-      clueElement.classList.remove("background-color-highlight");
-    }
+    this.highlightedClueElement.classList.remove("background-color-highlight");
   }
 
   highlightClue() {
-    let clueElement = this.template.querySelector(
-      'div[data-id="' + this.highlightedClueAnswerPairId + '"]'
-    );
-
-    clueElement.classList.add("background-color-highlight");
-
-    this.oldHighlightedClueAnswerPairId = this.highlightedClueAnswerPairId;
+    this.highlightedClueElement.classList.add("background-color-highlight");
   }
 
   handleOnKeyDown(event) {
