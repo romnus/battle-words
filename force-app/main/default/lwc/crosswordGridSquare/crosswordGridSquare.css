@@ -21,6 +21,8 @@
   grid-row: 2 / 2;
   font-size: 27px;
   text-align: center;
+  -webkit-user-select: none; /* Safari */
+  user-select: none;
 }
 
 .background-color-white {
