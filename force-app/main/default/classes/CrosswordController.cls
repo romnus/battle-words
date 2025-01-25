@@ -34,6 +34,25 @@ public with sharing class CrosswordController {
     return gridRowsAsJSON;
   }
 
+  @AuraEnabled(cacheable=true)
+  public static List<Crossword__c> getCrosswords() {
+    return [
+      SELECT
+        Id,
+        Name,
+        Size_Across__c,
+        Size_Top__c,
+        Release_Date__c,
+        (
+          SELECT Id, Percentage_Complete__c
+          FROM Crossword_Attempts__r
+          WHERE Player__c = :UserInfo.getUserId()
+        )
+      FROM Crossword__c
+      ORDER BY Release_Date__c DESC
+    ];
+  }
+
   private static List<Square> getSquares(Integer sizeTop, Integer sizeAcross) {
     List<Square> squares = new List<Square>();
 
