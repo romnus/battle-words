@@ -21,6 +21,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Crossword_Attempt__c.Player__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Crossword_Guess__c.Input__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -41,6 +46,10 @@
     </tabVisibilities>
     <tabVisibilities>
         <tab>Crossword__c</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>Play_Crosswords</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>
     <userLicense>External Apps Login</userLicense>
