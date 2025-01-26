@@ -1,9 +1,10 @@
 <template>
   <lightning-datatable
-    key-field="id"
+    key-field="crosswordId"
     columns={columns}
     data={crosswords}
-    hide-checkbox-column
+    max-row-selection="1"
+    onrowselection={handleRowSelection}
     default-sort-direction={defaultSortDirection}
     sorted-direction={sortDirection}
     sorted-by={sortedBy}

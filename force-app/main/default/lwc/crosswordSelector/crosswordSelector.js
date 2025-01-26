@@ -1,4 +1,7 @@
 import { LightningElement, wire } from "lwc";
+import { publish, MessageContext } from "lightning/messageService";
+import CROSSWORD_SELECTED_CHANNEL from "@salesforce/messageChannel/Crossword_Selected__c";
+
 import getCrosswords from "@salesforce/apex/CrosswordController.getCrosswords";
 
 const columns = [
@@ -22,6 +25,9 @@ export default class CrosswordSelector extends LightningElement {
   sortDirection = "asc";
   sortedBy;
 
+  @wire(MessageContext)
+  messageContext;
+
   @wire(getCrosswords)
   wiredCrosswords({ error, data }) {
     if (data) {
@@ -29,15 +35,17 @@ export default class CrosswordSelector extends LightningElement {
 
       data.forEach((crossword) => {
         let newCrossword = {
-          id: crossword.Id,
+          crosswordId: crossword.Id,
           Name: crossword.Name,
           size: crossword.Size_Across__c + "x" + crossword.Size_Across__c,
           Release_Date__c: crossword.Release_Date__c
         };
 
-        newCrossword.Percentage_Complete__c = crossword.Crossword_Attempts__r
-          ? crossword.Crossword_Attempts__r[0].Percentage_Complete__c
-          : 0;
+        if (crossword.Crossword_Attempts__r) {
+          newCrossword.Percentage_Complete__c =
+            crossword.Crossword_Attempts__r[0].Percentage_Complete__c;
+          newCrossword.attemptId = crossword.Crossword_Attempts__r[0].Id;
+        }
 
         crosswords.push(newCrossword);
       });
@@ -48,6 +56,18 @@ export default class CrosswordSelector extends LightningElement {
       this.error = error;
       this.crosswords = undefined;
     }
+  }
+
+  handleRowSelection(event) {
+    const xcrosswordId = event.detail.selectedRows[0].crosswordId;
+    const xattemptId = event.detail.selectedRows[0].attemptId;
+
+    const payload = {
+      crosswordId: xcrosswordId,
+      attemptId: xattemptId
+    };
+
+    publish(this.messageContext, CROSSWORD_SELECTED_CHANNEL, payload);
   }
 
   onHandleSort(event) {
