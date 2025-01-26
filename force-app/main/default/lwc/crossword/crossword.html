@@ -1,5 +1,7 @@
 <template>
   <div class="grid">
-    <c-crossword-grid record-id={recordId}> </c-crossword-grid>
+    <template lwc:if={recordId}>
+      <c-crossword-grid record-id={recordId}> </c-crossword-grid>
+    </template>
   </div>
 </template>
