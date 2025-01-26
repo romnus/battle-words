@@ -1,4 +1,4 @@
-import { LightningElement, api } from "lwc";
+import { LightningElement, api, wire } from "lwc";
 import getClues from "@salesforce/apex/CrosswordController.getClues";
 
 export default class CrosswordClueList extends LightningElement {
@@ -30,12 +30,13 @@ export default class CrosswordClueList extends LightningElement {
     );
   }
 
-  connectedCallback() {
-    getClues({ crosswordId: this.recordId }).then((clues) => {
+  @wire(getClues, { crosswordId: "$recordId" })
+  wiredClues({ error, data }) {
+    if (data) {
       let acrossClues = [];
       let downClues = [];
 
-      for (const clue of clues) {
+      for (const clue of data) {
         if (clue.Direction__c == "Across") {
           acrossClues.push(clue);
         } else {
@@ -45,7 +46,13 @@ export default class CrosswordClueList extends LightningElement {
 
       this.acrossClues = acrossClues;
       this.downClues = downClues;
-    });
+
+      this.error = undefined;
+    } else if (error) {
+      this.error = error;
+      this.acrossClues = undefined;
+      this.downClues = undefined;
+    }
   }
 
   handleClueClick(event) {

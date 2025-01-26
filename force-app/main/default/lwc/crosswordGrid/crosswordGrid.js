@@ -1,4 +1,4 @@
-import { LightningElement, api } from "lwc";
+import { LightningElement, api, wire } from "lwc";
 import getGridRowDtos from "@salesforce/apex/CrosswordController.getGridRowDtos";
 
 export default class CrosswordGrid extends LightningElement {
@@ -24,10 +24,14 @@ export default class CrosswordGrid extends LightningElement {
   highlightedClueAnswerPairId;
   currentDirection = "across";
 
-  connectedCallback() {
-    getGridRowDtos({ crosswordId: this.recordId }).then((results) => {
-      this.gridRowDtos = JSON.parse(results);
-    });
+  @wire(getGridRowDtos, { crosswordId: "$recordId" })
+  wiredGridRowDtos({ error, data }) {
+    if (data) {
+      this.gridRowDtos = JSON.parse(data);
+    } else if (error) {
+      this.error = error;
+      this.gridRowDtos = undefined;
+    }
   }
 
   handleSquareClick(event) {
