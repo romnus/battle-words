@@ -10,5 +10,5 @@
 
 .grid-clues-split {
   display: grid;
-  grid-template-columns: 45% 35%;
+  grid-template-columns: 64% auto;
 }
