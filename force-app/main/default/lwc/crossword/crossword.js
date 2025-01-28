@@ -6,6 +6,7 @@ export default class Crossword extends LightningElement {
   @api recordId;
   @api attemptId;
 
+  name;
   subscription;
 
   @wire(MessageContext)
@@ -24,6 +25,7 @@ export default class Crossword extends LightningElement {
   }
 
   handleCrosswordSelected(message) {
+    this.name = message.name;
     this.recordId = message.crosswordId;
     this.attemptId = message.attemptId;
   }

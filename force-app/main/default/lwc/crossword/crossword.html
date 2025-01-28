@@ -1,7 +1,10 @@
 <template>
-  <div class="grid">
+  <div>
     <template lwc:if={recordId}>
-      <c-crossword-grid record-id={recordId}> </c-crossword-grid>
+      <lightning-card variant="narrow">
+        <h1 slot="title">{name}</h1>
+        <c-crossword-grid record-id={recordId}> </c-crossword-grid>
+      </lightning-card>
     </template>
   </div>
 </template>

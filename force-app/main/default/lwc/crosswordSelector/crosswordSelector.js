@@ -59,12 +59,14 @@ export default class CrosswordSelector extends LightningElement {
   }
 
   handleRowSelection(event) {
-    const xcrosswordId = event.detail.selectedRows[0].crosswordId;
-    const xattemptId = event.detail.selectedRows[0].attemptId;
+    const name = event.detail.selectedRows[0].Name;
+    const crosswordId = event.detail.selectedRows[0].crosswordId;
+    const attemptId = event.detail.selectedRows[0].attemptId;
 
     const payload = {
-      crosswordId: xcrosswordId,
-      attemptId: xattemptId
+      name: name,
+      crosswordId: crosswordId,
+      attemptId: attemptId
     };
 
     publish(this.messageContext, CROSSWORD_SELECTED_CHANNEL, payload);
