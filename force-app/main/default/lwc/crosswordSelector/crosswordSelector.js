@@ -6,13 +6,26 @@ import getCrosswords from "@salesforce/apex/CrosswordController.getCrosswords";
 
 const columns = [
   { label: "Name", fieldName: "Name", sortable: true },
-  { label: "Size", fieldName: "size", sortable: true },
-  { label: "Release Date", fieldName: "Release_Date__c", sortable: true },
+  { label: "Size", fieldName: "size", sortable: true, initialWidth: 70 },
+  {
+    label: "Release Date",
+    fieldName: "Release_Date__c",
+    type: "date",
+    sortable: true,
+    initialWidth: 137,
+    typeAttributes: {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      weekday: "short"
+    }
+  },
   {
     label: "Percentage Complete",
     fieldName: "Percentage_Complete__c",
     type: "percent",
-    sortable: true
+    sortable: true,
+    initialWidth: 175
   }
 ];
 
@@ -43,7 +56,7 @@ export default class CrosswordSelector extends LightningElement {
 
         if (crossword.Crossword_Attempts__r) {
           newCrossword.Percentage_Complete__c =
-            crossword.Crossword_Attempts__r[0].Percentage_Complete__c;
+            crossword.Crossword_Attempts__r[0].Percentage_Complete__c / 100;
           newCrossword.attemptId = crossword.Crossword_Attempts__r[0].Id;
         }
 
