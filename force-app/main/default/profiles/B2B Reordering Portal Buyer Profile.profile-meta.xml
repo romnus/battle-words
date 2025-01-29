@@ -35,6 +35,9 @@
         <readable>true</readable>
     </fieldPermissions>
     <layoutAssignments>
+        <layout>Crossword_Attempt__c-Attempt Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>Crossword_Clue_Answer_Pair__c-Crossword Clue-Answer Pair Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
