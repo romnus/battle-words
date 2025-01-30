@@ -6,5 +6,13 @@
         <c-crossword-grid record-id={recordId}> </c-crossword-grid>
       </lightning-card>
     </template>
+    <template lwc:else>
+      <lightning-card variant="narrow">
+        <h1 slot="title">Welcome to Battle Words!</h1>
+        <p class="slds-p-horizontal_small">
+          Choose a crossword in the table to the right to get started!
+        </p>
+      </lightning-card>
+    </template>
   </div>
 </template>
