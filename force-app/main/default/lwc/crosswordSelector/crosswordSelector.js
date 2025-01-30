@@ -3,6 +3,10 @@ import { publish, MessageContext } from "lightning/messageService";
 import CROSSWORD_SELECTED_CHANNEL from "@salesforce/messageChannel/Crossword_Selected__c";
 
 import getCrosswords from "@salesforce/apex/CrosswordController.getCrosswords";
+import getPlayer from "@salesforce/apex/CrosswordController.getPlayer";
+
+import userId from "@salesforce/user/Id";
+import { updateRecord } from "lightning/uiRecordApi";
 
 const columns = [
   { label: "Name", fieldName: "Name", sortable: true },
@@ -32,6 +36,8 @@ const columns = [
 export default class CrosswordSelector extends LightningElement {
   crosswords;
   error;
+
+  selectedRow = [];
 
   columns = columns;
   defaultSortDirection = "asc";
@@ -65,6 +71,25 @@ export default class CrosswordSelector extends LightningElement {
 
       this.crosswords = crosswords;
       this.error = undefined;
+
+      getPlayer().then((player) => {
+        if (player.Last_Played_Crossword_Id__c) {
+          const lastPlayedCrosswordId = player.Last_Played_Crossword_Id__c;
+          this.selectedRow = [lastPlayedCrosswordId];
+
+          const lastPlayedCrossword = this.crosswords.find(
+            (crossword) => crossword.crosswordId === lastPlayedCrosswordId
+          );
+
+          const payload = {
+            name: lastPlayedCrossword.Name,
+            crosswordId: lastPlayedCrosswordId,
+            attemptId: lastPlayedCrossword.attemptId
+          };
+
+          publish(this.messageContext, CROSSWORD_SELECTED_CHANNEL, payload);
+        }
+      });
     } else if (error) {
       this.error = error;
       this.crosswords = undefined;
@@ -83,6 +108,13 @@ export default class CrosswordSelector extends LightningElement {
     };
 
     publish(this.messageContext, CROSSWORD_SELECTED_CHANNEL, payload);
+
+    const fields = {};
+    fields["Id"] = userId;
+    fields["Last_Played_Crossword_Id__c"] = crosswordId;
+    const recordInput = { fields };
+
+    updateRecord(recordInput);
   }
 
   onHandleSort(event) {
