@@ -53,6 +53,15 @@ public with sharing class CrosswordController {
     ];
   }
 
+  @AuraEnabled(cacheable=true)
+  public static User getPlayer() {
+    return [
+      SELECT Last_Played_Crossword_Id__c
+      FROM User
+      WHERE Id = :UserInfo.getUserId()
+    ];
+  }
+
   private static List<Square> getSquares(Integer sizeTop, Integer sizeAcross) {
     List<Square> squares = new List<Square>();
 
