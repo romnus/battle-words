@@ -34,6 +34,11 @@
         <field>Crossword__c.Release_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>User.Last_Played_Crossword_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <layoutAssignments>
         <layout>Crossword_Attempt__c-Attempt Layout</layout>
     </layoutAssignments>
