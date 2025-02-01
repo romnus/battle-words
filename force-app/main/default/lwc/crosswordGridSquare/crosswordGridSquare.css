@@ -7,7 +7,7 @@
   border: 1px solid black;
   padding: 4px 2px 5px 3px;
   grid-template-columns: 5px auto;
-  grid-template-rows: 3px auto;
+  grid-template-rows: 3px 50px;
 }
 
 .clue-number {
