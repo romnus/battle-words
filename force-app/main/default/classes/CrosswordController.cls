@@ -1,5 +1,4 @@
 public with sharing class CrosswordController {
-  private static final String BLACK_SQUARE_CHARACTER = '.';
   private static final String ACROSS = 'ACROSS';
 
   @AuraEnabled(cacheable=true)
@@ -68,7 +67,6 @@ public with sharing class CrosswordController {
     for (Integer i = 0; i < sizeTop * sizeAcross; i++) {
       Square square = new Square();
       square.id = i + 1;
-      square.value = BLACK_SQUARE_CHARACTER;
 
       squares.add(square);
     }

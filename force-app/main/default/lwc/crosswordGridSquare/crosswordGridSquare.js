@@ -8,7 +8,7 @@ export default class CrosswordGridSquare extends LightningElement {
   @api clueAnswerPairIdDown;
 
   get isBlackSquare() {
-    return this.answer == ".";
+    return this.answer === null;
   }
 
   renderedCallback() {
