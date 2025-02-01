@@ -8,10 +8,6 @@
         <target>lightning__RecordPage</target>
     </targets>
     <targetConfigs>
-        <targetConfig targets="lightning__AppPage, lightning__HomePage">
-            <property name="recordId" type="String" />
-            <property name="attemptId" type="String" />
-        </targetConfig>
         <targetConfig targets="lightning__RecordPage">
             <objects>
               <object>Crossword__c</object>
