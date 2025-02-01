@@ -3,7 +3,8 @@
     <template lwc:if={recordId}>
       <lightning-card variant="narrow">
         <h1 slot="title">{name}</h1>
-        <c-crossword-grid record-id={recordId}> </c-crossword-grid>
+        <c-crossword-grid record-id={recordId} is-playable={isPlayable}>
+        </c-crossword-grid>
       </lightning-card>
     </template>
     <template lwc:else>

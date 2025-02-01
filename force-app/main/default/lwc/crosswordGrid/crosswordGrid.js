@@ -3,6 +3,7 @@ import getGridRowDtos from "@salesforce/apex/CrosswordController.getGridRowDtos"
 
 export default class CrosswordGrid extends LightningElement {
   @api recordId;
+  @api isPlayable;
 
   gridRowDtos = [];
 

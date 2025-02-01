@@ -84,7 +84,9 @@ export default class CrosswordSelector extends LightningElement {
           const payload = {
             name: lastPlayedCrossword.Name,
             crosswordId: lastPlayedCrosswordId,
-            attemptId: lastPlayedCrossword.attemptId
+            attemptId: lastPlayedCrossword.attemptId,
+            isPlayable:
+              lastPlayedCrossword.Percentage_Complete__c === 1 ? false : true
           };
 
           publish(this.messageContext, CROSSWORD_SELECTED_CHANNEL, payload);
@@ -100,11 +102,14 @@ export default class CrosswordSelector extends LightningElement {
     const name = event.detail.selectedRows[0].Name;
     const crosswordId = event.detail.selectedRows[0].crosswordId;
     const attemptId = event.detail.selectedRows[0].attemptId;
+    const isPlayable =
+      event.detail.selectedRows[0].Percentage_Complete__c === 1 ? false : true;
 
     const payload = {
       name: name,
       crosswordId: crosswordId,
-      attemptId: attemptId
+      attemptId: attemptId,
+      isPlayable: isPlayable
     };
 
     publish(this.messageContext, CROSSWORD_SELECTED_CHANNEL, payload);

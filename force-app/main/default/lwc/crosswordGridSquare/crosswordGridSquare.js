@@ -6,6 +6,7 @@ export default class CrosswordGridSquare extends LightningElement {
   @api clueNumber;
   @api clueAnswerPairIdAcross;
   @api clueAnswerPairIdDown;
+  @api isPlayable;
 
   get isBlackSquare() {
     return this.answer === null;

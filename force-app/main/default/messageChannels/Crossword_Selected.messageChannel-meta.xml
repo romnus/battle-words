@@ -3,9 +3,15 @@
     <masterLabel>Crossword_Selected</masterLabel>
     <isExposed>true</isExposed>
      <lightningMessageFields>
+        <fieldName>name</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
         <fieldName>crosswordId</fieldName>
     </lightningMessageFields>
      <lightningMessageFields>
         <fieldName>attemptId</fieldName>
     </lightningMessageFields>    
+     <lightningMessageFields>
+        <fieldName>isPlayable</fieldName>
+    </lightningMessageFields>        
 </LightningMessageChannel>

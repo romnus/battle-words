@@ -5,6 +5,9 @@
     onclick={handleSquareClick}
   >
     <div class="clue-number">{clueNumber}</div>
-    <div class="answer">{answer}</div>
+    <template lwc:if={isPlayable}> </template>
+    <template lwc:else>
+      <div class="answer">{answer}</div>
+    </template>
   </div>
 </template>

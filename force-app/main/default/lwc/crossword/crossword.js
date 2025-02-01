@@ -6,6 +6,8 @@ export default class Crossword extends LightningElement {
   @api recordId;
   @api attemptId;
 
+  isPlayable = false;
+
   name;
   subscription;
 
@@ -28,5 +30,6 @@ export default class Crossword extends LightningElement {
     this.name = message.name;
     this.recordId = message.crosswordId;
     this.attemptId = message.attemptId;
+    this.isPlayable = message.isPlayable;
   }
 }
