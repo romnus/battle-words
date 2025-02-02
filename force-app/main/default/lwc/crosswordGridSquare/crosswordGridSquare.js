@@ -8,6 +8,8 @@ export default class CrosswordGridSquare extends LightningElement {
   @api clueAnswerPairIdDown;
   @api isPlayable;
 
+  guess;
+
   get isBlackSquare() {
     return this.answer === null;
   }
@@ -57,6 +59,16 @@ export default class CrosswordGridSquare extends LightningElement {
           }
         })
       );
+    }
+  }
+
+  handleGuess(event) {
+    const guess = event.key.toUpperCase();
+
+    const guessIsLetter = /^[a-zA-Z]$/;
+
+    if (guessIsLetter.test(event.key)) {
+      this.guess = guess;
     }
   }
 }

@@ -3,11 +3,13 @@
     lwc:ref="crosswordSquare"
     class="crossword-square"
     onclick={handleSquareClick}
+    onkeydown={handleGuess}
+    tabindex="0"
   >
     <div class="clue-number">{clueNumber}</div>
-    <template lwc:if={isPlayable}> </template>
-    <template lwc:else>
-      <div class="answer">{answer}</div>
-    </template>
+    <div class="square-value">
+      <template lwc:if={isPlayable}>{guess}</template>
+      <template lwc:else> {answer} </template>
+    </div>
   </div>
 </template>
