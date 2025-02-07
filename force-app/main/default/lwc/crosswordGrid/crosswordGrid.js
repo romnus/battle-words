@@ -1,8 +1,11 @@
 import { LightningElement, api, wire } from "lwc";
+import { createRecord } from "lightning/uiRecordApi";
 import getGridRowDtos from "@salesforce/apex/CrosswordController.getGridRowDtos";
+import userId from "@salesforce/user/Id";
 
 export default class CrosswordGrid extends LightningElement {
   @api recordId;
+  @api attemptId;
   @api isPlayable;
 
   gridRowDtos = [];
@@ -24,6 +27,21 @@ export default class CrosswordGrid extends LightningElement {
 
   highlightedClueAnswerPairId;
   currentDirection = "across";
+
+  connectedCallback() {
+    if (!this.attemptId) {
+      const fields = {};
+      fields["Crossword__c"] = this.recordId;
+      fields["Player__c"] = userId;
+      fields["Minutes_Spent__c"] = 0;
+      fields["Seconds_Spent__c"] = 0;
+      fields["Percentage_Complete__c"] = 0;
+      fields["Last_Active_Square__c"] = 1;
+
+      const recordInput = { apiName: "Crossword_Attempt__c", fields };
+      createRecord(recordInput);
+    }
+  }
 
   @wire(getGridRowDtos, { crosswordId: "$recordId" })
   wiredGridRowDtos({ error, data }) {
