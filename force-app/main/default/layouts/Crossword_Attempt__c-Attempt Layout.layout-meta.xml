@@ -28,6 +28,10 @@
                 <behavior>Required</behavior>
                 <field>Percentage_Complete__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Required</behavior>
+                <field>Last_Active_Square__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
