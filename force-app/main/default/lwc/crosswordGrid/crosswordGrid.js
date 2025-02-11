@@ -1,5 +1,5 @@
 import { LightningElement, api, wire } from "lwc";
-import { createRecord } from "lightning/uiRecordApi";
+import { createRecord, updateRecord } from "lightning/uiRecordApi";
 import getGridRowDtos from "@salesforce/apex/CrosswordController.getGridRowDtos";
 import userId from "@salesforce/user/Id";
 
@@ -41,6 +41,14 @@ export default class CrosswordGrid extends LightningElement {
       const recordInput = { apiName: "Crossword_Attempt__c", fields };
       createRecord(recordInput);
     }
+  }
+
+  handleBeforeUnload() {
+    const fields = {};
+    fields["Id"] = this.attemptId;
+    fields["Last_Active_Square__c"] = this.focusedSquareId;
+    const recordInput = { fields };
+    updateRecord(recordInput);
   }
 
   @wire(getGridRowDtos, { crosswordId: "$recordId" })

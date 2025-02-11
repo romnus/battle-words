@@ -14,6 +14,14 @@ export default class CrosswordGridSquare extends LightningElement {
     return this.answer === null;
   }
 
+  connectedCallback() {
+    window.addEventListener("beforeunload", this.handleBeforeUnload.bind(this));
+  }
+
+  handleBeforeUnload() {
+    this.dispatchEvent(new CustomEvent("crosswordexit"));
+  }
+
   renderedCallback() {
     const backgroundColorClass = this.isBlackSquare
       ? "background-color-black"
