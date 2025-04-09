@@ -1,12 +1,11 @@
 <template>
   <div>
-    <template lwc:if={recordId}>
+    <template lwc:if={crosswordWithAttempt}>
       <lightning-card variant="narrow">
         <h1 slot="title">{name}</h1>
         <c-crossword-grid
-          record-id={recordId}
-          is-playable={isPlayable}
-          attempt-id={attemptId}
+          crossword-with-attempt={crosswordWithAttempt}
+          crossword-id={crosswordWithAttempt.crosswordId}
         >
         </c-crossword-grid>
       </lightning-card>

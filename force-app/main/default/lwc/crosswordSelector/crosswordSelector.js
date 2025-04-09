@@ -2,11 +2,11 @@ import { LightningElement, wire } from "lwc";
 import { publish, MessageContext } from "lightning/messageService";
 import CROSSWORD_SELECTED_CHANNEL from "@salesforce/messageChannel/Crossword_Selected__c";
 
-import getCrosswords from "@salesforce/apex/CrosswordController.getCrosswords";
+import getCrosswordsWithAttemptAndFirstClueAnswerPair from "@salesforce/apex/CrosswordController.getCrosswordsWithAttemptAndFirstClueAnswerPair";
 import getPlayer from "@salesforce/apex/CrosswordController.getPlayer";
 
 import userId from "@salesforce/user/Id";
-import { updateRecord } from "lightning/uiRecordApi";
+import { createRecord, updateRecord } from "lightning/uiRecordApi";
 
 const columns = [
   { label: "Name", fieldName: "Name", sortable: true },
@@ -34,8 +34,7 @@ const columns = [
 ];
 
 export default class CrosswordSelector extends LightningElement {
-  crosswords;
-  error;
+  crosswordsWithAttempt;
 
   selectedRow = [];
 
@@ -47,13 +46,12 @@ export default class CrosswordSelector extends LightningElement {
   @wire(MessageContext)
   messageContext;
 
-  @wire(getCrosswords)
-  wiredCrosswords({ error, data }) {
-    if (data) {
-      let crosswords = [];
+  connectedCallback() {
+    getCrosswordsWithAttemptAndFirstClueAnswerPair().then((crosswords) => {
+      let crosswordsWithAttempt = [];
 
-      data.forEach((crossword) => {
-        let newCrossword = {
+      crosswords.forEach((crossword) => {
+        let crosswordWithAttempt = {
           crosswordId: crossword.Id,
           Name: crossword.Name,
           size: crossword.Size_Across__c + "x" + crossword.Size_Across__c,
@@ -61,62 +59,63 @@ export default class CrosswordSelector extends LightningElement {
         };
 
         if (crossword.Crossword_Attempts__r) {
-          newCrossword.Percentage_Complete__c =
+          crosswordWithAttempt.Percentage_Complete__c =
             crossword.Crossword_Attempts__r[0].Percentage_Complete__c / 100;
-          newCrossword.attemptId = crossword.Crossword_Attempts__r[0].Id;
+          crosswordWithAttempt.attempt = crossword.Crossword_Attempts__r[0];
+        } else {
+          const fields = {};
+          fields["Crossword__c"] = crossword.Id;
+          fields["Player__c"] = userId;
+          fields["Minutes_Spent__c"] = 0;
+          fields["Seconds_Spent__c"] = 0;
+          fields["Percentage_Complete__c"] = 0;
+          fields["Last_Active_Square__c"] = 1;
+          fields["Last_Active_Clue_Answer_Pair_Id__c"] =
+            crossword.Crossword_Clue_Answer_Pair__r[0].Id;
+
+          const recordInput = { apiName: "Crossword_Attempt__c", fields };
+
+          crosswordWithAttempt.Percentage_Complete__c = 0;
+          crosswordWithAttempt.attempt = createRecord(recordInput);
         }
 
-        crosswords.push(newCrossword);
+        crosswordsWithAttempt.push(crosswordWithAttempt);
       });
 
-      this.crosswords = crosswords;
-      this.error = undefined;
+      this.crosswordsWithAttempt = crosswordsWithAttempt;
 
       getPlayer().then((player) => {
         if (player.Last_Played_Crossword_Id__c) {
           const lastPlayedCrosswordId = player.Last_Played_Crossword_Id__c;
           this.selectedRow = [lastPlayedCrosswordId];
 
-          const lastPlayedCrossword = this.crosswords.find(
-            (crossword) => crossword.crosswordId === lastPlayedCrosswordId
-          );
+          const lastPlayedCrosswordWithAttempt =
+            this.crosswordsWithAttempt.find(
+              (crossword) => crossword.crosswordId === lastPlayedCrosswordId
+            );
 
           const payload = {
-            name: lastPlayedCrossword.Name,
-            crosswordId: lastPlayedCrosswordId,
-            attemptId: lastPlayedCrossword.attemptId,
-            isPlayable:
-              lastPlayedCrossword.Percentage_Complete__c === 1 ? false : true
+            crosswordWithAttempt: lastPlayedCrosswordWithAttempt
           };
 
           publish(this.messageContext, CROSSWORD_SELECTED_CHANNEL, payload);
         }
       });
-    } else if (error) {
-      this.error = error;
-      this.crosswords = undefined;
-    }
+    });
   }
 
   handleRowSelection(event) {
-    const name = event.detail.selectedRows[0].Name;
-    const crosswordId = event.detail.selectedRows[0].crosswordId;
-    const attemptId = event.detail.selectedRows[0].attemptId;
-    const isPlayable =
-      event.detail.selectedRows[0].Percentage_Complete__c === 1 ? false : true;
+    const crosswordWithAttempt = event.detail.selectedRows[0];
 
     const payload = {
-      name: name,
-      crosswordId: crosswordId,
-      attemptId: attemptId,
-      isPlayable: isPlayable
+      crosswordWithAttempt: crosswordWithAttempt
     };
 
     publish(this.messageContext, CROSSWORD_SELECTED_CHANNEL, payload);
 
     const fields = {};
     fields["Id"] = userId;
-    fields["Last_Played_Crossword_Id__c"] = crosswordId;
+    fields["Last_Played_Crossword_Id__c"] = crosswordWithAttempt.crosswordId;
     const recordInput = { fields };
 
     updateRecord(recordInput);
@@ -124,10 +123,10 @@ export default class CrosswordSelector extends LightningElement {
 
   onHandleSort(event) {
     const { fieldName: sortedBy, sortDirection } = event.detail;
-    const cloneData = [...this.crosswords];
+    const cloneData = [...this.crosswordsWithAttempt];
 
     cloneData.sort(this.sortBy(sortedBy, sortDirection === "asc" ? 1 : -1));
-    this.crosswords = cloneData;
+    this.crosswordsWithAttempt = cloneData;
     this.sortDirection = sortDirection;
     this.sortedBy = sortedBy;
   }

@@ -2,7 +2,7 @@ import { LightningElement, api, wire } from "lwc";
 import getClues from "@salesforce/apex/CrosswordController.getClues";
 
 export default class CrosswordClueList extends LightningElement {
-  @api recordId;
+  @api crosswordId;
 
   acrossClues = [];
   downClues = [];
@@ -15,13 +15,15 @@ export default class CrosswordClueList extends LightningElement {
   }
 
   set highlightedClueAnswerPairId(value) {
-    if (this._highlightedClueAnswerPairId) {
+    if (this.highlightedClueElement) {
       this.unhighlightClue();
     }
 
     this._highlightedClueAnswerPairId = value;
 
-    this.highlightClue();
+    if (this.highlightedClueElement) {
+      this.highlightClue();
+    }
   }
 
   get highlightedClueElement() {
@@ -30,7 +32,13 @@ export default class CrosswordClueList extends LightningElement {
     );
   }
 
-  @wire(getClues, { crosswordId: "$recordId" })
+  renderedCallback() {
+    if (this.highlightedClueElement) {
+      this.highlightClue();
+    }
+  }
+
+  @wire(getClues, { crosswordId: "$crosswordId" })
   wiredClues({ error, data }) {
     if (data) {
       let acrossClues = [];

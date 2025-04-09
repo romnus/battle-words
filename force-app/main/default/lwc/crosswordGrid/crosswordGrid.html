@@ -24,7 +24,10 @@
         </template>
       </template>
     </div>
-    <c-crossword-clue-list record-id={recordId} onclueclick={handleClueClick}>
+    <c-crossword-clue-list
+      crossword-id={crosswordWithAttempt.crosswordId}
+      onclueclick={handleClueClick}
+    >
     </c-crossword-clue-list>
   </div>
 </template>

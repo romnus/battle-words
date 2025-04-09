@@ -1,14 +1,12 @@
 import { LightningElement, api, wire } from "lwc";
-import { createRecord, updateRecord } from "lightning/uiRecordApi";
+import { updateRecord } from "lightning/uiRecordApi";
 import getGridRowDtos from "@salesforce/apex/CrosswordController.getGridRowDtos";
-import userId from "@salesforce/user/Id";
 
 export default class CrosswordGrid extends LightningElement {
-  @api recordId;
-  @api attemptId;
-  @api isPlayable;
-
+  @api crosswordWithAttempt;
+  @api crosswordId;
   gridRowDtos = [];
+  isPlayable;
 
   get highlightedAnswerIdentifier() {
     const clueAnswerPairIdAttributeName =
@@ -28,30 +26,7 @@ export default class CrosswordGrid extends LightningElement {
   highlightedClueAnswerPairId;
   currentDirection = "across";
 
-  connectedCallback() {
-    if (!this.attemptId) {
-      const fields = {};
-      fields["Crossword__c"] = this.recordId;
-      fields["Player__c"] = userId;
-      fields["Minutes_Spent__c"] = 0;
-      fields["Seconds_Spent__c"] = 0;
-      fields["Percentage_Complete__c"] = 0;
-      fields["Last_Active_Square__c"] = 1;
-
-      const recordInput = { apiName: "Crossword_Attempt__c", fields };
-      createRecord(recordInput);
-    }
-  }
-
-  handleBeforeUnload() {
-    const fields = {};
-    fields["Id"] = this.attemptId;
-    fields["Last_Active_Square__c"] = this.focusedSquareId;
-    const recordInput = { fields };
-    updateRecord(recordInput);
-  }
-
-  @wire(getGridRowDtos, { crosswordId: "$recordId" })
+  @wire(getGridRowDtos, { crosswordId: "$crosswordId" })
   wiredGridRowDtos({ error, data }) {
     if (data) {
       this.gridRowDtos = JSON.parse(data);
@@ -59,6 +34,48 @@ export default class CrosswordGrid extends LightningElement {
       this.error = error;
       this.gridRowDtos = undefined;
     }
+  }
+
+  connectedCallback() {
+    this.isPlayable =
+      this.crosswordWithAttempt.Percentage_Complete__c === 1 ? false : true;
+
+    if (this.isPlayable) {
+      this.highlightedClueAnswerPairId =
+        this.crosswordWithAttempt.attempt.Last_Active_Clue_Answer_Pair_Id__c;
+    }
+  }
+
+  renderedCallback() {
+    if (this.isPlayable) {
+      if (this.highlightedClueAnswerPairId) {
+        this.unhighlightAnswer();
+      }
+
+      if (this.focusedSquareId) {
+        this.removeSquareFocusHighlight();
+      }
+
+      this.focusedSquareId =
+        this.crosswordWithAttempt.attempt.Last_Active_Square__c;
+
+      this.highlightFocusSquare();
+      this.highlightAnswer();
+
+      this.template.querySelector(
+        "c-crossword-clue-list"
+      ).highlightedClueAnswerPairId = this.highlightedClueAnswerPairId;
+    }
+  }
+
+  handleBeforeUnload() {
+    const fields = {};
+    fields["Id"] = this.crosswordWithAttempt.attempt.Id;
+    fields["Last_Active_Clue_Answer_Pair_Id__c"] =
+      this.highlightedClueAnswerPairId;
+    fields["Last_Active_Square__c"] = this.focusedSquareId;
+    const recordInput = { fields };
+    updateRecord(recordInput);
   }
 
   handleSquareClick(event) {
@@ -139,18 +156,21 @@ export default class CrosswordGrid extends LightningElement {
       this.highlightedAnswerIdentifier
     );
 
-    highlightedSquares.forEach((square) => {
-      square.highlightSquare();
-    });
+    if (highlightedSquares) {
+      highlightedSquares.forEach((square) => {
+        square.highlightSquare();
+      });
+    }
   }
 
   highlightFocusSquare() {
-    let focusedSquare = this.template.querySelector(
-      this.highlightedAnswerIdentifier
-    );
+    let newFocusedSquareIdentifier =
+      'c-crossword-grid-square[data-square-id="' + this.focusedSquareId + '"]';
 
-    focusedSquare.addSquareFocusHighlight();
+    let focusedSquare = this.template.querySelector(newFocusedSquareIdentifier);
 
-    this.focusedSquareId = focusedSquare.squareId;
+    if (focusedSquare) {
+      focusedSquare.addSquareFocusHighlight();
+    }
   }
 }

@@ -34,7 +34,7 @@ public with sharing class CrosswordController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static List<Crossword__c> getCrosswords() {
+  public static List<Crossword__c> getCrosswordsWithAttemptAndFirstClueAnswerPair() {
     return [
       SELECT
         Id,
@@ -43,9 +43,20 @@ public with sharing class CrosswordController {
         Size_Top__c,
         Release_Date__c,
         (
-          SELECT Id, Percentage_Complete__c
+          SELECT
+            Id,
+            Percentage_Complete__c,
+            Last_Active_Clue_Answer_Pair_Id__c,
+            Last_Active_Square__c
           FROM Crossword_Attempts__r
           WHERE Player__c = :UserInfo.getUserId()
+          LIMIT 1
+        ),
+        (
+          SELECT Id
+          FROM Crossword_Clue_Answer_Pair__r
+          WHERE Direction__c = :ACROSS AND Number__c = 1
+          LIMIT 1
         )
       FROM Crossword__c
       ORDER BY Release_Date__c DESC
