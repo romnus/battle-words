@@ -1,9 +1,11 @@
-import { LightningElement, api, wire } from "lwc";
+import { LightningElement, wire } from "lwc";
 import { subscribe, MessageContext } from "lightning/messageService";
 import CROSSWORD_SELECTED_CHANNEL from "@salesforce/messageChannel/Crossword_Selected__c";
+import getMostRecentAttempt from "@salesforce/apex/CrosswordController.getMostRecentAttempt";
+import getMostRecentAttemptWithCrosswordId from "@salesforce/apex/CrosswordController.getMostRecentAttemptWithCrosswordId";
 
 export default class Crossword extends LightningElement {
-  crosswordWithAttempt;
+  attempt;
 
   subscription;
 
@@ -12,6 +14,10 @@ export default class Crossword extends LightningElement {
 
   connectedCallback() {
     this.subscribeToMessageChannel();
+
+    getMostRecentAttempt().then((mostRecentAttempt) => {
+      this.attempt = mostRecentAttempt;
+    });
   }
 
   subscribeToMessageChannel() {
@@ -23,6 +29,14 @@ export default class Crossword extends LightningElement {
   }
 
   handleCrosswordSelected(message) {
-    this.crosswordWithAttempt = message.crosswordWithAttempt;
+    const crosswordGrid = this.template.querySelector("c-crossword-grid");
+
+    crosswordGrid.saveFocusedSquareAndClueAnswerPair();
+
+    getMostRecentAttemptWithCrosswordId({
+      crosswordId: message.selectedCrosswordId
+    }).then((mostRecentAttempt) => {
+      this.attempt = mostRecentAttempt;
+    });
   }
 }

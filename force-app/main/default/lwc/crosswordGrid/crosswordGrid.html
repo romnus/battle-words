@@ -5,10 +5,10 @@
         <template
           for:each={gridRowDto.squares}
           for:item="square"
-          key={gridRowDto.rowLocation}
+          key={gridRowDto.rowId}
         >
           <c-crossword-grid-square
-            key={square.id}
+            key={square.key}
             data-square-id={square.id}
             square-id={square.id}
             answer={square.value}
@@ -25,7 +25,7 @@
       </template>
     </div>
     <c-crossword-clue-list
-      crossword-id={crosswordWithAttempt.crosswordId}
+      crossword-id={attempt.Crossword__c}
       onclueclick={handleClueClick}
     >
     </c-crossword-clue-list>

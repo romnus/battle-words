@@ -1,22 +1,11 @@
 <template>
-  <div>
-    <template lwc:if={crosswordWithAttempt}>
+  <template lwc:if={attempt}>
+    <div>
       <lightning-card variant="narrow">
-        <h1 slot="title">{name}</h1>
-        <c-crossword-grid
-          crossword-with-attempt={crosswordWithAttempt}
-          crossword-id={crosswordWithAttempt.crosswordId}
-        >
+        <h1 slot="title">{attempt.Crossword__r.Name}</h1>
+        <c-crossword-grid attempt={attempt} crossword-id={attempt.Crossword__c}>
         </c-crossword-grid>
       </lightning-card>
-    </template>
-    <template lwc:else>
-      <lightning-card variant="narrow">
-        <h1 slot="title">Welcome to Battle Words!</h1>
-        <p class="slds-p-horizontal_small">
-          Choose a crossword in the table to the right to get started!
-        </p>
-      </lightning-card>
-    </template>
-  </div>
+    </div>
+  </template>
 </template>

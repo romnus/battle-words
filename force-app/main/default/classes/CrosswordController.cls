@@ -24,7 +24,7 @@ public with sharing class CrosswordController {
       clueAnswerPairs[0].Crossword__r.Size_Across__c
     );
 
-    List<Square> squares = getSquares(sizeTop, sizeAcross);
+    List<Square> squares = getSquares(crosswordId, sizeTop, sizeAcross);
 
     squares = setAnswerSquares(squares, clueAnswerPairs, sizeTop);
 
@@ -34,7 +34,76 @@ public with sharing class CrosswordController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static List<Crossword__c> getCrosswordsWithAttemptAndFirstClueAnswerPair() {
+  public static Crossword_Attempt__c getMostRecentAttempt() {
+    Crossword_Attempt__c attempt = new Crossword_Attempt__c();
+
+    List<Crossword_Attempt__c> mostRecentAttempt = [
+      SELECT
+        Id,
+        Percentage_Complete__c,
+        Last_Active_Clue_Answer_Pair_Id__c,
+        Last_Active_Square__c,
+        Crossword__c,
+        Crossword__r.Name
+      FROM Crossword_Attempt__c
+      WHERE CreatedById = :UserInfo.getUserId()
+      ORDER BY LastModifiedDate DESC
+      LIMIT 1
+    ];
+
+    if (mostRecentAttempt.isEmpty()) {
+      Crossword__c crossword = [
+        SELECT
+          Id,
+          (
+            SELECT Id
+            FROM Crossword_Clue_Answer_Pair__r
+            WHERE Direction__c = :ACROSS AND Number__c = 1
+            LIMIT 1
+          )
+        FROM Crossword__c
+        ORDER BY CreatedDate DESC
+        LIMIT 1
+      ];
+
+      attempt.Crossword__c = crossword.Id;
+      attempt.Minutes_Spent__c = 0;
+      attempt.Seconds_Spent__c = 0;
+      attempt.Percentage_Complete__c = 0;
+      attempt.Last_Active_Square__c = 0;
+      attempt.Last_Active_Clue_Answer_Pair_Id__c = crossword.Crossword_Clue_Answer_Pair__r[0]
+        .Id;
+
+      insert attempt;
+
+      attempt = getMostRecentAttemptWithCrosswordId(crossword.Id);
+    } else {
+      attempt = mostRecentAttempt[0];
+    }
+
+    return attempt;
+  }
+
+  @AuraEnabled(cacheable=false)
+  public static Crossword_Attempt__c getMostRecentAttemptWithCrosswordId(
+    Id crosswordId
+  ) {
+    return [
+      SELECT
+        Id,
+        Percentage_Complete__c,
+        Last_Active_Clue_Answer_Pair_Id__c,
+        Last_Active_Square__c,
+        Crossword__c,
+        Crossword__r.Name
+      FROM Crossword_Attempt__c
+      WHERE CreatedById = :UserInfo.getUserId() AND Crossword__c = :crosswordId
+      LIMIT 1
+    ];
+  }
+
+  @AuraEnabled(cacheable=true)
+  public static List<Crossword__c> getCrosswordsWithAttempt() {
     return [
       SELECT
         Id,
@@ -43,19 +112,9 @@ public with sharing class CrosswordController {
         Size_Top__c,
         Release_Date__c,
         (
-          SELECT
-            Id,
-            Percentage_Complete__c,
-            Last_Active_Clue_Answer_Pair_Id__c,
-            Last_Active_Square__c
+          SELECT Percentage_Complete__c
           FROM Crossword_Attempts__r
-          WHERE Player__c = :UserInfo.getUserId()
-          LIMIT 1
-        ),
-        (
-          SELECT Id
-          FROM Crossword_Clue_Answer_Pair__r
-          WHERE Direction__c = :ACROSS AND Number__c = 1
+          WHERE CreatedById = :UserInfo.getUserId()
           LIMIT 1
         )
       FROM Crossword__c
@@ -63,20 +122,16 @@ public with sharing class CrosswordController {
     ];
   }
 
-  @AuraEnabled(cacheable=true)
-  public static User getPlayer() {
-    return [
-      SELECT Last_Played_Crossword_Id__c
-      FROM User
-      WHERE Id = :UserInfo.getUserId()
-    ];
-  }
-
-  private static List<Square> getSquares(Integer sizeTop, Integer sizeAcross) {
+  private static List<Square> getSquares(
+    Id crosswordId,
+    Integer sizeTop,
+    Integer sizeAcross
+  ) {
     List<Square> squares = new List<Square>();
 
     for (Integer i = 0; i < sizeTop * sizeAcross; i++) {
       Square square = new Square();
+      square.key = crosswordId + String.valueOf(i);
       square.id = i + 1;
 
       squares.add(square);
@@ -181,6 +236,7 @@ public with sharing class CrosswordController {
   }
 
   private class Square {
+    String key { get; set; }
     Integer id { get; set; }
     String value { get; set; }
     Integer clueNumber { get; set; }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
-    <masterLabel>Crossword_Selected</masterLabel>
     <isExposed>true</isExposed>
-     <lightningMessageFields>
-        <fieldName>crosswordWithAttempt</fieldName>
-    </lightningMessageFields>  
+    <lightningMessageFields>
+        <fieldName>selectedCrosswordId</fieldName>
+    </lightningMessageFields>
+    <masterLabel>Crossword_Selected</masterLabel>
 </LightningMessageChannel>

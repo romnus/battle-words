@@ -308,7 +308,7 @@
                             <value>NAME</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>Player__c</value>
+                            <value>CREATEDBY_USER</value>
                         </valueListItems>
                         <valueListItems>
                             <value>Minutes_Spent__c</value>
