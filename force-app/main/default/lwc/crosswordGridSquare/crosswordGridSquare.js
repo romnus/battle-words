@@ -2,24 +2,27 @@ import { LightningElement, api } from "lwc";
 
 export default class CrosswordGridSquare extends LightningElement {
   @api squareId;
-  @api answer;
+  @api squareAnswer;
   @api clueNumber;
   @api clueAnswerPairIdAcross;
   @api clueAnswerPairIdDown;
   @api isPlayable;
 
-  guess;
+  oldGuess;
+  @api guess;
+  @api guessId;
+
+  @api
+  get wasGuessChanged() {
+    return this.guess !== this.oldGuess;
+  }
 
   get isBlackSquare() {
-    return this.answer === null;
+    return this.squareAnswer === null;
   }
 
   connectedCallback() {
-    window.addEventListener("beforeunload", this.handleBeforeUnload.bind(this));
-  }
-
-  handleBeforeUnload() {
-    this.dispatchEvent(new CustomEvent("crosswordexit"));
+    this.oldGuess = this.guess;
   }
 
   renderedCallback() {

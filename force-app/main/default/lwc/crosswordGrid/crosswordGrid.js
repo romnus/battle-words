@@ -1,16 +1,16 @@
 import { LightningElement, api, wire } from "lwc";
 import { updateRecord } from "lightning/uiRecordApi";
 import getGridRowDtos from "@salesforce/apex/CrosswordController.getGridRowDtos";
+import saveGuesses from "@salesforce/apex/CrosswordController.saveGuesses";
 
 export default class CrosswordGrid extends LightningElement {
-  @api crosswordId;
   gridRowDtos = [];
   isPlayable;
 
   _attempt;
 
-  lastCrosswordFocusSquareId;
-  lastCrosswordHighlightedClueAnswerPairId;
+  focusedSquareId;
+  highlightedClueAnswerPairId;
 
   currentDirection = "across";
 
@@ -38,10 +38,6 @@ export default class CrosswordGrid extends LightningElement {
     this.isPlayable = this._attempt.Percentage_Complete__c === 1 ? false : true;
 
     if (this.isPlayable) {
-      this.lastCrosswordFocusSquareId = this.focusedSquareId;
-      this.lastCrosswordHighlightedClueAnswerPairId =
-        this.highlightedClueAnswerPairId;
-
       this.highlightedClueAnswerPairId =
         this._attempt.Last_Active_Clue_Answer_Pair_Id__c;
 
@@ -49,7 +45,7 @@ export default class CrosswordGrid extends LightningElement {
     }
   }
 
-  @wire(getGridRowDtos, { crosswordId: "$crosswordId" })
+  @wire(getGridRowDtos, { attempt: "$attempt" })
   wiredGridRowDtos({ error, data }) {
     if (data) {
       this.gridRowDtos = JSON.parse(data);
@@ -67,14 +63,6 @@ export default class CrosswordGrid extends LightningElement {
     }
 
     if (this.isPlayable) {
-      if (this.lastCrosswordHighlightedClueAnswerPairId) {
-        this.unhighlightAnswer();
-      }
-
-      if (this.lastCrosswordFocusSquareId) {
-        this.removeSquareFocusHighlight();
-      }
-
       if (this.focusedSquareId) {
         this.highlightFocusSquare();
       }
@@ -83,10 +71,6 @@ export default class CrosswordGrid extends LightningElement {
         this.highlightAnswer();
       }
     }
-  }
-
-  handleBeforeUnload() {
-    this.saveFocusedSquareAndClueAnswerPair();
   }
 
   @api
@@ -98,6 +82,30 @@ export default class CrosswordGrid extends LightningElement {
     fields["Last_Active_Square__c"] = this.focusedSquareId;
     const recordInput = { fields };
     updateRecord(recordInput);
+  }
+
+  @api
+  async saveGuesses() {
+    const guesses = [];
+
+    this.template
+      .querySelectorAll("c-crossword-grid-square")
+      .forEach((square) => {
+        if (square.wasGuessChanged) {
+          let guess = {};
+
+          guess.Id = square.guessId;
+          guess.Square_Id__c = square.squareId;
+          guess.Attempt__c = this.attempt.Id;
+          guess.Input__c = square.guess;
+
+          guesses.push(guess);
+        }
+      });
+
+    if (guesses.length !== 0) {
+      await saveGuesses({ guesses: guesses });
+    }
   }
 
   handleSquareClick(event) {

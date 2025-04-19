@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <applicationVisibilities>
         <application>Battle_Words</application>
@@ -21,11 +21,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Crossword_Attempt__c.Player__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>Crossword_Guess__c.Input__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -38,7 +33,8 @@
         <layout>Crossword_Attempt__c-Attempt Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>Crossword_Clue_Answer_Pair__c-Crossword Clue-Answer Pair Layout</layout>
+        <layout
+    >Crossword_Clue_Answer_Pair__c-Crossword Clue-Answer Pair Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>Crossword__c-Crossword Layout</layout>

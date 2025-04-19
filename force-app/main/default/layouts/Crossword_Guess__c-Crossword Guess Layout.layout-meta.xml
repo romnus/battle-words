@@ -11,16 +11,12 @@
                 <field>Attempt__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Required</behavior>
-                <field>Across__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Required</behavior>
-                <field>Top__c</field>
-            </layoutItems>
-            <layoutItems>
                 <behavior>Readonly</behavior>
                 <field>Name</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Required</behavior>
+                <field>Square_Id__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns/>
@@ -56,8 +52,6 @@
     </layoutSections>
     <miniLayout>
         <fields>Attempt__c</fields>
-        <fields>Across__c</fields>
-        <fields>Top__c</fields>
     </miniLayout>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

@@ -3,6 +3,7 @@ import { publish, MessageContext } from "lightning/messageService";
 import CROSSWORD_SELECTED_CHANNEL from "@salesforce/messageChannel/Crossword_Selected__c";
 import getCrosswordsWithAttempt from "@salesforce/apex/CrosswordController.getCrosswordsWithAttempt";
 import getMostRecentAttempt from "@salesforce/apex/CrosswordController.getMostRecentAttempt";
+import getMostRecentlyCreatedCrossword from "@salesforce/apex/CrosswordController.getMostRecentlyCreatedCrossword";
 
 const columns = [
   { label: "Name", fieldName: "Name", sortable: true },
@@ -42,11 +43,17 @@ export default class CrosswordSelector extends LightningElement {
   @wire(MessageContext)
   messageContext;
 
-  renderedCallback() {
+  async renderedCallback() {
     if (this.crosswordsWithAttempt && this.selectedRow.length === 0) {
-      getMostRecentAttempt().then((mostRecentAttempt) => {
-        this.selectedRow = [mostRecentAttempt.Crossword__c];
-      });
+      const mostRecentAttempt = await getMostRecentAttempt();
+
+      if (mostRecentAttempt.length !== 0) {
+        this.selectedRow = [mostRecentAttempt[0].Crossword__c];
+      } else {
+        const mostRecentlyCreatedCrossword =
+          await getMostRecentlyCreatedCrossword();
+        this.selectedRow = [mostRecentlyCreatedCrossword.Id];
+      }
     }
   }
 

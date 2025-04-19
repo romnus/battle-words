@@ -9,16 +9,17 @@
         >
           <c-crossword-grid-square
             key={square.key}
-            data-square-id={square.id}
-            square-id={square.id}
-            answer={square.value}
+            data-square-id={square.squareId}
+            square-id={square.squareId}
+            guess-id={square.guessId}
+            square-answer={square.squareAnswer}
+            guess={square.guess}
             clue-number={square.clueNumber}
             data-clue-answer-pair-id-across={square.clueAnswerPairIdAcross}
             data-clue-answer-pair-id-down={square.clueAnswerPairIdDown}
             clue-answer-pair-id-across={square.clueAnswerPairIdAcross}
             clue-answer-pair-id-down={square.clueAnswerPairIdDown}
             onsquareclick={handleSquareClick}
-            oncrosswordexit={handleBeforeUnload}
             is-playable={isPlayable}
           ></c-crossword-grid-square>
         </template>

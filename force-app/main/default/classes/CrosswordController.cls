@@ -2,7 +2,7 @@ public with sharing class CrosswordController {
   private static final String ACROSS = 'ACROSS';
 
   @AuraEnabled(cacheable=true)
-  public static String getGridRowDtos(Id crosswordId) {
+  public static String getGridRowDtos(Crossword_Attempt__c attempt) {
     List<Crossword_Clue_Answer_Pair__c> clueAnswerPairs = [
       SELECT
         Id,
@@ -13,7 +13,7 @@ public with sharing class CrosswordController {
         Crossword__r.Size_Top__c,
         Crossword__r.Size_Across__c
       FROM Crossword_Clue_Answer_Pair__c
-      WHERE Crossword__c = :crosswordId
+      WHERE Crossword__c = :attempt.Crossword__c
       ORDER BY Number__c ASC
     ];
 
@@ -24,20 +24,41 @@ public with sharing class CrosswordController {
       clueAnswerPairs[0].Crossword__r.Size_Across__c
     );
 
-    List<Square> squares = getSquares(crosswordId, sizeTop, sizeAcross);
+    List<Crossword_Guess__c> guesses = [
+      SELECT Id, Input__c, Square_Id__c
+      FROM Crossword_Guess__c
+      WHERE Attempt__c = :attempt.Id
+    ];
 
-    squares = setAnswerSquares(squares, clueAnswerPairs, sizeTop);
+    Map<Integer, Crossword_Guess__c> guessBySquareId = getGuessBySquareId(
+      guesses
+    );
 
-    String gridRowsAsJSON = makeGridRowsAsJSON(squares, sizeAcross, sizeTop);
+    Map<Integer, Square> squareBySquareId = getSquareBySquareId(
+      attempt.Crossword__c,
+      sizeTop,
+      sizeAcross
+    );
+
+    squareBySquareId = setAnswerSquares(
+      squareBySquareId,
+      clueAnswerPairs,
+      sizeTop,
+      guessBySquareId
+    );
+
+    String gridRowsAsJSON = makeGridRowsAsJSON(
+      squareBySquareId.values(),
+      sizeAcross,
+      sizeTop
+    );
 
     return gridRowsAsJSON;
   }
 
-  @AuraEnabled(cacheable=true)
-  public static Crossword_Attempt__c getMostRecentAttempt() {
-    Crossword_Attempt__c attempt = new Crossword_Attempt__c();
-
-    List<Crossword_Attempt__c> mostRecentAttempt = [
+  @AuraEnabled(cacheable=false)
+  public static List<Crossword_Attempt__c> getMostRecentAttempt() {
+    return [
       SELECT
         Id,
         Percentage_Complete__c,
@@ -50,42 +71,71 @@ public with sharing class CrosswordController {
       ORDER BY LastModifiedDate DESC
       LIMIT 1
     ];
-
-    if (mostRecentAttempt.isEmpty()) {
-      Crossword__c crossword = [
-        SELECT
-          Id,
-          (
-            SELECT Id
-            FROM Crossword_Clue_Answer_Pair__r
-            WHERE Direction__c = :ACROSS AND Number__c = 1
-            LIMIT 1
-          )
-        FROM Crossword__c
-        ORDER BY CreatedDate DESC
-        LIMIT 1
-      ];
-
-      attempt.Crossword__c = crossword.Id;
-      attempt.Minutes_Spent__c = 0;
-      attempt.Seconds_Spent__c = 0;
-      attempt.Percentage_Complete__c = 0;
-      attempt.Last_Active_Square__c = 0;
-      attempt.Last_Active_Clue_Answer_Pair_Id__c = crossword.Crossword_Clue_Answer_Pair__r[0]
-        .Id;
-
-      insert attempt;
-
-      attempt = getMostRecentAttemptWithCrosswordId(crossword.Id);
-    } else {
-      attempt = mostRecentAttempt[0];
-    }
-
-    return attempt;
+  }
+  @AuraEnabled(cacheable=true)
+  public static Crossword__c getMostRecentlyCreatedCrossword() {
+    return [
+      SELECT
+        Id,
+        (
+          SELECT Id
+          FROM Crossword_Clue_Answer_Pair__r
+          WHERE Direction__c = :ACROSS AND Number__c = 1
+          LIMIT 1
+        )
+      FROM Crossword__c
+      ORDER BY CreatedDate DESC
+      LIMIT 1
+    ];
   }
 
   @AuraEnabled(cacheable=false)
-  public static Crossword_Attempt__c getMostRecentAttemptWithCrosswordId(
+  public static List<Crossword_Attempt__c> createAttemptForMostRecentlyCreatedCrossword() {
+    Crossword__c crossword = getMostRecentlyCreatedCrossword();
+
+    return createAttempt(crossword);
+  }
+
+  @AuraEnabled(cacheable=false)
+  public static List<Crossword_Attempt__c> createAttemptForCrossword(
+    Id crosswordId
+  ) {
+    Crossword__c crossword = [
+      SELECT
+        Id,
+        (
+          SELECT Id
+          FROM Crossword_Clue_Answer_Pair__r
+          WHERE Direction__c = :ACROSS AND Number__c = 1
+          LIMIT 1
+        )
+      FROM Crossword__c
+      WHERE Id = :crosswordId
+    ];
+
+    return createAttempt(crossword);
+  }
+
+  private static List<Crossword_Attempt__c> createAttempt(
+    Crossword__c crossword
+  ) {
+    Crossword_Attempt__c attempt = new Crossword_Attempt__c();
+
+    attempt.Crossword__c = crossword.Id;
+    attempt.Minutes_Spent__c = 0;
+    attempt.Seconds_Spent__c = 0;
+    attempt.Percentage_Complete__c = 0;
+    attempt.Last_Active_Square__c = 0;
+    attempt.Last_Active_Clue_Answer_Pair_Id__c = crossword.Crossword_Clue_Answer_Pair__r[0]
+      .Id;
+
+    insert attempt;
+
+    return getMostRecentAttemptWithCrosswordId(crossword.Id);
+  }
+
+  @AuraEnabled(cacheable=false)
+  public static List<Crossword_Attempt__c> getMostRecentAttemptWithCrosswordId(
     Id crosswordId
   ) {
     return [
@@ -122,35 +172,50 @@ public with sharing class CrosswordController {
     ];
   }
 
-  private static List<Square> getSquares(
+  private static Map<Integer, Square> getSquareBySquareId(
     Id crosswordId,
     Integer sizeTop,
     Integer sizeAcross
   ) {
-    List<Square> squares = new List<Square>();
+    Map<Integer, Square> squareBySquareId = new Map<Integer, Square>();
 
     for (Integer i = 0; i < sizeTop * sizeAcross; i++) {
+      Integer squareId = i + 1;
+
       Square square = new Square();
       square.key = crosswordId + String.valueOf(i);
-      square.id = i + 1;
+      square.squareId = squareId;
 
-      squares.add(square);
+      squareBySquareId.put(squareId, square);
     }
 
-    return squares;
+    return squareBySquareId;
   }
 
-  private static List<Square> setAnswerSquares(
-    List<Square> squares,
+  private static Map<Integer, Crossword_Guess__c> getGuessBySquareId(
+    List<Crossword_Guess__c> guesses
+  ) {
+    Map<Integer, Crossword_Guess__c> guessBySquareId = new Map<Integer, Crossword_Guess__c>();
+
+    for (Crossword_Guess__c guess : guesses) {
+      guessBySquareId.put(Integer.valueOf(guess.Square_Id__c), guess);
+    }
+
+    return guessBySquareId;
+  }
+
+  private static Map<Integer, Square> setAnswerSquares(
+    Map<Integer, Square> squareBySquareId,
     List<Crossword_Clue_Answer_Pair__c> clueAnswerPairs,
-    Integer sizeTop
+    Integer sizeTop,
+    Map<Integer, Crossword_Guess__c> guessBySquareId
   ) {
     for (Crossword_Clue_Answer_Pair__c clueAnswerPair : clueAnswerPairs) {
       Integer startingSquareLocation = Integer.valueOf(
-        clueAnswerPair.Location__c - 1
+        clueAnswerPair.Location__c
       );
 
-      Square startingSquare = squares.get(startingSquareLocation);
+      Square startingSquare = squareBySquareId.get(startingSquareLocation);
       startingSquare.clueNumber = Integer.valueOf(clueAnswerPair.Number__c);
 
       String answer = clueAnswerPair.Answer__c;
@@ -161,28 +226,37 @@ public with sharing class CrosswordController {
         characterCounter++
       ) {
         if (clueAnswerPair.Direction__c == ACROSS) {
-          Integer id = startingSquareLocation + characterCounter;
+          Integer squareId = startingSquareLocation + characterCounter;
 
-          Square currentSquare = squares.get(id);
+          Square currentSquare = squareBySquareId.get(squareId);
 
-          String value = answer.substring(
+          String squareAnswer = answer.substring(
             characterCounter,
             characterCounter + 1
           );
 
-          currentSquare.value = value;
+          currentSquare.squareAnswer = squareAnswer;
+
+          Crossword_Guess__c guess = guessBySquareId.get(squareId);
+
+          if (guess != null) {
+            currentSquare.guessId = guess.Id;
+            currentSquare.guess = guess.Input__c;
+          }
+
           currentSquare.clueAnswerPairIdAcross = clueAnswerPair.Id;
         } else {
-          Integer id = startingSquareLocation + characterCounter * sizeTop;
+          Integer squareId =
+            startingSquareLocation + characterCounter * sizeTop;
 
-          Square currentSquare = squares.get(id);
+          Square currentSquare = squareBySquareId.get(squareId);
 
           currentSquare.clueAnswerPairIdDown = clueAnswerPair.Id;
         }
       }
     }
 
-    return squares;
+    return squareBySquareId;
   }
 
   private static String makeGridRowsAsJSON(
@@ -197,7 +271,7 @@ public with sharing class CrosswordController {
       gridRowDtos[gridRowDtos.size() - 1].squares.add(square);
 
       if (
-        Math.mod(square.id, sizeAcross) == 0 &&
+        Math.mod(square.squareId, sizeAcross) == 0 &&
         gridRowDtos.size() != sizeTop
       ) {
         Integer rowLocation = gridRowDtos.size();
@@ -207,6 +281,11 @@ public with sharing class CrosswordController {
     }
 
     return JSON.serialize(gridRowDtos);
+  }
+
+  @AuraEnabled(cacheable=false)
+  public static void saveGuesses(List<Crossword_Guess__c> guesses) {
+    upsert guesses;
   }
 
   @AuraEnabled(cacheable=true)
@@ -237,8 +316,10 @@ public with sharing class CrosswordController {
 
   private class Square {
     String key { get; set; }
-    Integer id { get; set; }
-    String value { get; set; }
+    Integer squareId { get; set; }
+    String squareAnswer { get; set; }
+    String guess { get; set; }
+    Id guessId { get; set; }
     Integer clueNumber { get; set; }
     Id clueAnswerPairIdAcross { get; set; }
     Id clueAnswerPairIdDown { get; set; }

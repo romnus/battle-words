@@ -3,9 +3,14 @@
     <div>
       <lightning-card variant="narrow">
         <h1 slot="title">{attempt.Crossword__r.Name}</h1>
-        <c-crossword-grid attempt={attempt} crossword-id={attempt.Crossword__c}>
-        </c-crossword-grid>
+        <c-crossword-grid attempt={attempt}> </c-crossword-grid>
       </lightning-card>
     </div>
+  </template>
+  <template lwc:if={showSpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="x-small"
+    ></lightning-spinner>
   </template>
 </template>
