@@ -17,6 +17,8 @@ export default class Crossword extends LightningElement {
   messageContext;
 
   async connectedCallback() {
+    this.showSpinner = true;
+
     this.subscribeToMessageChannel();
     window.addEventListener("beforeunload", this.handleBeforeUnload.bind(this));
 
@@ -28,6 +30,8 @@ export default class Crossword extends LightningElement {
     } else {
       this.attempt = mostRecentAttempt[0];
     }
+
+    this.showSpinner = false;
   }
 
   subscribeToMessageChannel() {
@@ -39,6 +43,8 @@ export default class Crossword extends LightningElement {
   }
 
   async handleCrosswordSelected(message) {
+    this.showSpinner = true;
+
     const crosswordGrid = this.template.querySelector("c-crossword-grid");
 
     crosswordGrid.saveFocusedSquareAndClueAnswerPair();
@@ -56,6 +62,8 @@ export default class Crossword extends LightningElement {
     } else {
       this.attempt = mostRecentAttempt[0];
     }
+
+    this.showSpinner = false;
   }
 
   handleBeforeUnload() {
