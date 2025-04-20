@@ -41,7 +41,10 @@ export default class CrosswordGrid extends LightningElement {
       this.highlightedClueAnswerPairId =
         this._attempt.Last_Active_Clue_Answer_Pair_Id__c;
 
-      this.focusedSquareId = this.attempt.Last_Active_Square__c;
+      this.focusedSquareId = this._attempt.Last_Active_Square__c;
+
+      this.currentDirection =
+        this._attempt.Last_Active_Clue_Answer_Pair_Id__r.Direction__c;
     }
   }
 

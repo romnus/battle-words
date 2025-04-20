@@ -64,6 +64,7 @@ public with sharing class CrosswordController {
         Percentage_Complete__c,
         Last_Active_Clue_Answer_Pair_Id__c,
         Last_Active_Square__c,
+        Last_Active_Clue_Answer_Pair_Id__r.Direction__c,
         Crossword__c,
         Crossword__r.Name
       FROM Crossword_Attempt__c
@@ -143,6 +144,7 @@ public with sharing class CrosswordController {
         Id,
         Percentage_Complete__c,
         Last_Active_Clue_Answer_Pair_Id__c,
+        Last_Active_Clue_Answer_Pair_Id__r.Direction__c,
         Last_Active_Square__c,
         Crossword__c,
         Crossword__r.Name

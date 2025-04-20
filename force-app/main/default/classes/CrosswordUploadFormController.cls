@@ -1,6 +1,6 @@
 public with sharing class CrosswordUploadFormController {
-  private static final String ACROSS = 'ACROSS';
-  private static final String DOWN = 'DOWN';
+  private static final String ACROSS = 'Across';
+  private static final String DOWN = 'Down';
   private static final String NEWLINE = '\n';
   private static final String PERIOD = '.';
 
