@@ -3,6 +3,8 @@ import { updateRecord } from "lightning/uiRecordApi";
 import getGridRowDtos from "@salesforce/apex/CrosswordController.getGridRowDtos";
 import saveGuesses from "@salesforce/apex/CrosswordController.saveGuesses";
 
+const ACROSS = "Across";
+
 export default class CrosswordGrid extends LightningElement {
   gridRowDtos = [];
   isPlayable;
@@ -12,7 +14,7 @@ export default class CrosswordGrid extends LightningElement {
   focusedSquareId;
   highlightedClueAnswerPairId;
 
-  currentDirection = "across";
+  currentDirection = ACROSS;
 
   get highlightedAnswerIdentifier() {
     const clueAnswerPairIdAttributeName =
@@ -121,7 +123,7 @@ export default class CrosswordGrid extends LightningElement {
     }
 
     this.highlightedClueAnswerPairId =
-      this.currentDirection === "across" ? acrossId : downId;
+      this.currentDirection === ACROSS ? acrossId : downId;
 
     if (this.focusedSquareId) {
       if (this.focusedSquareId === focusedSquareId) {
@@ -158,12 +160,12 @@ export default class CrosswordGrid extends LightningElement {
   }
 
   toggleHighlightedClueAnswerPairIdAndDirection(acrossId, downId) {
-    if (this.currentDirection === "across") {
+    if (this.currentDirection === ACROSS) {
       this.highlightedClueAnswerPairId = downId;
       this.currentDirection = "down";
     } else {
       this.highlightedClueAnswerPairId = acrossId;
-      this.currentDirection = "across";
+      this.currentDirection = ACROSS;
     }
   }
 
