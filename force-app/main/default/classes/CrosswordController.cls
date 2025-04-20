@@ -126,7 +126,7 @@ public with sharing class CrosswordController {
     attempt.Minutes_Spent__c = 0;
     attempt.Seconds_Spent__c = 0;
     attempt.Percentage_Complete__c = 0;
-    attempt.Last_Active_Square__c = 0;
+    attempt.Last_Active_Square__c = 1;
     attempt.Last_Active_Clue_Answer_Pair_Id__c = crossword.Crossword_Clue_Answer_Pair__r[0]
       .Id;
 
